@@ -1,0 +1,13 @@
+﻿form {
+    background-color: #00E3F6;
+    max-width: 600px;
+    border-radius: 2em;
+    padding: 10em; 
+}
+
+label {
+    float: left;
+    width: 20%;
+    text-align: right;
+    margin-right: 0.5em;
+}

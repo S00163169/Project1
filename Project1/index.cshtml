@@ -1,0 +1,78 @@
+﻿@using Project1;
+@using System.Data.SqlClient;
+@using System.Configuration;
+
+@{
+    // Validation on input fields
+    Validation.Add("email", Validator.Required(), Validator.Regex(@"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$"));
+    Validation.Add("password", Validator.Required());
+    // Stores intputs values to memory
+    string email = Request.Form["email"];
+    string password = Request.Form["password"];
+    string name = "";
+
+    string errorMessage = "";
+    // Gets connection string of database
+    string connectingString = ConfigurationManager.ConnectionStrings["Connection"].ConnectionString;
+    // makes connection to database
+    SqlConnection db = new SqlConnection(connectingString);
+    // Opens connection
+    db.Open();
+    // Gets Emails and Passwords of in database ready for login
+    string question = "SELECT Email, Password, Firstname, ID FROM dbo.[User] ";
+    //List for storing query return values
+    List<Model> people = new List<Model>();
+    //Makes new command
+    SqlCommand query = new SqlCommand(question, db);
+
+    SqlDataReader dr = query.ExecuteReader();
+
+    while (dr.Read())
+    {
+        //stores emails and passwords into list
+        people.Add(new Model { Email = dr["Email"].ToString(), Password = dr["Password"].ToString(), Firstname = dr["Firstname"].ToString(), UserID = dr["ID"].ToString() });
+    }
+    //Closes connection
+    db.Close();
+    //Converts to array for searching through
+    Model[] loginCheck = people.ToArray();
+
+    if (IsPost && Validation.IsValid())
+    {
+        for (int i = 0; i < loginCheck.Length; i++)
+        {
+            if (loginCheck[i].Email == email && loginCheck[i].Password == password)
+            {
+                Session["Name"] = loginCheck[i].Firstname;
+                Session["UserID"] = loginCheck[i].UserID;
+                Response.Redirect("home.cshtml");
+            }
+
+            if (loginCheck[i].Email != email && loginCheck[i].Password != password && i == loginCheck.Length - 1)
+            {
+                errorMessage = "Please check Email and Password or this account may not exists.";
+            }
+        }
+    }
+}
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+    <link href="~/css/styleForLogin.css" rel="stylesheet" />
+</head>
+<body>
+    <div id="wrapper">
+        <form method="post">
+            @Html.ValidationMessage("email") @errorMessage
+            <div class="texter"><h3><label for="email"> Email:</label> <input type="text" name="email" id="email" placeholder="Example@hotmail.com" value="@email" /> </h3> </div>
+            @Html.ValidationMessage("password")
+            <div class="texter"><h3><label for="password"> Password:</label> <input type="password" name="password" id="password" value="@password" />  </h3></div>
+
+            <button type="submit" name="login" value="login"> Login </button>
+        </form>
+    </div>
+</body>
+</html>
+
