@@ -6,22 +6,22 @@
 
     //HttpContext.Current.ApplicationInstance.CompleteRequest();
 
-    //if (!string.IsNullOrEmpty( Session["allKeys"] as string) )
-    //{
-    //    // Array for all product ID's
-    //    Product[] products = { };
-    //    // Variable for each item in session storage
-    //    string[] keys = (string[])Session["allKeys"];
-    //    // Loop for storing products into array
-    //    for (int i = 0; i < keys.Length; i++)
-    //    {
-    //        var basketItem = (Product)Session[keys[i]];
-    //        products[i].ProductID = basketItem.ProductID;
-    //        products[i].Quantity = Convert.ToInt32(basketItem.Quantity);
-    //    }
-    //    // Send array to class to do work
-    //    bProds = Basket.BasketProducts(products);
-    //}
+    if (!string.IsNullOrEmpty(Session["allKeys"] as string))
+    {
+        // Array for all product ID's
+        Product[] products = { };
+        // Variable for each item in session storage
+        string[] keys = (string[])Session["allKeys"];
+        // Loop for storing products into array
+        for (int i = 0; i < keys.Length; i++)
+        {
+            var basketItem = (Product)Session[keys[i]];
+            products[i].ProductID = basketItem.ProductID;
+            products[i].Quantity = Convert.ToInt32(basketItem.Quantity);
+        }
+        // Send array to class to do work
+        bProds = Basket.BasketProducts(products);
+    }
     //else
     //{
     //    Response.Redirect("shop.cshtml", false);
@@ -305,24 +305,6 @@
                                         </div>
                                     </div>*@
                                 <hr>
-                                @{ 
-                                    if (!string.IsNullOrEmpty(Session["allKeys"] as string))
-                                    {
-                                        // Array for all product ID's
-                                        Product[] products = { };
-                                        // Variable for each item in session storage
-                                        string[] keys = (string[])Session["allKeys"];
-                                        // Loop for storing products into array
-                                        for (int i = 0; i < keys.Length; i++)
-                                        {
-                                            var basketItem = (Product)Session[keys[i]];
-                                            products[i].ProductID = basketItem.ProductID;
-                                            products[i].Quantity = Convert.ToInt32(basketItem.Quantity);
-                                        }
-                                        // Send array to class to do work
-                                        bProds = Basket.BasketProducts(products);
-                                    }
-                                }
                                 @foreach (Product product in bProds)
                                 {
                                     <div class="row">

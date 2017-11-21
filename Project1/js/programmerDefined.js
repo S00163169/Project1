@@ -6,6 +6,12 @@
     var minus = document.getElementsByName("mQuantity");
     var basket = document.getElementsByName("addToBasket");
 
+    document.getElementById("basketView").addEventListener("click", function (e) {
+        e.preventDefault();
+        window.location.href = "cart.cshtml";
+        e.returnValue = false;
+    }, false);
+
     var plusValue = 0;
     var minusValue = 0;
     var basketValue = 0;
@@ -81,5 +87,5 @@ function DisplayBasket() {
     sessionStorage.setItem("allKeys", JSON.stringify(keys));
     alert(keys);
 
-    window.location.href = "cart.cshtml";
+    return false;
 }
