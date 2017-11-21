@@ -6,6 +6,7 @@ using System.Configuration;
 using System.Data.SqlClient;
 using System.Data;
 using System.Net.Mail;
+using System.Text;
 
 namespace Project1
 {
@@ -43,6 +44,9 @@ namespace Project1
         public string ProductID { get; set; }
         public string Name { get; set; }
         public decimal Price { get; set; }
+        public string Description { get; set; }
+        // This is for the basket products only
+        public int Quantity { get; set; }
         #endregion
 
         #region Constructors
@@ -65,6 +69,7 @@ namespace Project1
     {
         static public void AddBasketItem()
         {
+            #region DB Connection and Inputs
             string connectionString = ConfigurationManager.ConnectionStrings["Connection"].ConnectionString;
 
             SqlConnection db = new SqlConnection(connectionString);
@@ -87,6 +92,8 @@ namespace Project1
             inputUserID.Value = "";
             inputProductID.Value = "";
             inputQuantity.Value = 1;
+
+            #endregion
         }
 
         static public List<Product> ReturnProducts()
@@ -130,6 +137,54 @@ namespace Project1
                     return products;
                 }
             }
+        }
+
+        static public Product GetBasketProducts(int productID)
+        {
+            Product product = new Product();
+
+            using (SqlConnection boothtest = new SqlConnection("Server=tcp:boothserver.database.windows.net,1433;" +
+                "Initial Catalog=boothtest;Persist Security Info=False;" +
+                "User ID=S00163774;Password=BOOTHserver%163774;" +
+                "MultipleActiveResultSets=False;Encrypt=True;" +
+                "TrustServerCertificate=False;Connection Timeout=30;"))
+            {
+
+                using (SqlCommand BasketProds = new SqlCommand("BasketItem", boothtest))
+                {
+                    BasketProds.CommandType = CommandType.StoredProcedure;
+
+                    SqlParameter inputEmail = BasketProds.Parameters.Add("@ProductID", SqlDbType.Int);
+                    inputEmail.Direction = ParameterDirection.Input;
+
+                    inputEmail.Value = productID;
+
+                    boothtest.Open();
+
+                    SqlDataReader myReader = BasketProds.ExecuteReader();
+
+                    product = new Product();
+
+                    while (myReader.Read())
+                    {
+                        product.ProductID = myReader["ProductID"].ToString();
+                        product.Name = myReader["ProductName"].ToString();
+                        product.Description = myReader["ProductDesc"].ToString();
+                        product.Price = decimal.Parse(myReader["ProductPrice"].ToString());
+                        product.ImageUrl = myReader["ProductURL"].ToString();
+                    }
+
+                    myReader.Close();
+                    boothtest.Close();
+
+                    return product;
+                }
+            }
+        }
+
+        static public void AddToBasket(string prodID,string UserID, string Quantity)
+        {
+
         }
 
         //static public User LogIn(string email, string password)
@@ -236,36 +291,31 @@ namespace Project1
 
     public class Basket
     {
+        #region Properties
         static List<Product> basketProducts = new List<Product>();
+        #endregion
 
-        static public void AddToBasket(string productId)
+        static public List<Product> BasketProducts(Product[] products)
         {
-            List<Product> dbProducts = DatabaseControl.ReturnProducts();
-
-            foreach (Product prod in dbProducts)
+            // Check if array isn't null
+            if (products != null)
             {
-                if (prod.ProductID == productId)
+                // Go through products and get all their details from the database and add the products to a new list
+                for (int i = 0; i < products.Length; i++)
                 {
-                    bool check = BasketChecker(prod);
-
-                    if (!check)
-                    {
-                        basketProducts.Add(prod);
-                    }
+                    Product prod = DatabaseControl.GetBasketProducts(Convert.ToInt32(products[i].ProductID));
+                    prod.Quantity = products[i].Quantity;
+                    basketProducts.Add(prod);
                 }
-            }
-        }
-
-        static bool BasketChecker(Product product)
-        {
-            if (basketProducts.Contains(product))
-            {
-                return true;
+                // Return the new list of products in the basket
+                return basketProducts;
             }
             else
             {
-                return false;
+                // If the array is null return null
+                return null;
             }
+
         }
     }
 

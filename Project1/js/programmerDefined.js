@@ -1,6 +1,6 @@
 ﻿'use strict';
 
-(function EventListeners() {
+(function ImmediateJob() {
     // Select all buttons on the products 
     var plus = document.getElementsByName("pQuantity");
     var minus = document.getElementsByName("mQuantity");
@@ -62,25 +62,24 @@ function AddToBasket(clicked_id, productID) {
     var quantity = $('span.badge')[pos].innerText;
     // place the product and quantity into session storage
     if (quantity != 0 || quantity != null) {
-        var basketItem = { 'product': productID, 'quantity': quantity };
+        var basketItem = { 'ProductID': productID, 'Quantity': quantity };
         sessionStorage.setItem('basketItem' + productID, JSON.stringify(basketItem));
 
-        toastr["success"]('Added to basket!');
         toastr.options = { "showMethod": "fadeIn", "hideMethod": "fadeOut", "timeOut": "3000", "closeButton": true };
+        toastr["success"]('Added to basket!');
     }
 }
 
 function DisplayBasket() {
     // collect all the keys in storage
     var keys = [];
-    var allKeys = "";
-    
 
     for (var i = 0; i < sessionStorage.length; i++) {
         keys[i] = sessionStorage.key(i);
     }
 
     sessionStorage.setItem("allKeys", JSON.stringify(keys));
+    alert(keys);
 
     window.location.href = "cart.cshtml";
 }
