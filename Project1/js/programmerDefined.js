@@ -24,6 +24,8 @@
         basket[k].setAttribute("id", "B" + basketValue);
         basketValue++;
     }
+
+    document.getElementById('updateBasket').addEventListener("click", UpdateCart, false);
 })();
 
 function minusQuantity(clicked_id) {
@@ -60,14 +62,14 @@ function redirector() {
     window.location.href = "cart.cshtml";
 }
 
-function AddToBasket(clicked_id, productID, productPrice, productName) {
+function AddToBasket(clicked_id, productID, productPrice, productName, Image) {
     // select quantity and product id
     var pos = clicked_id.charAt(clicked_id.length - 1);
     var quantity = $('span.badge')[pos].innerText;
     // place the product and quantity into session storage
-    if (quantity != 0 || quantity != null) {
+    if (quantity != null) {
 
-        var basketItem = [productID, quantity, productName, productPrice];
+        var basketItem = [productID, quantity, productName, productPrice, Image];
         var prod = new Product(basketItem);
 
         //var basketItem = { 'ProductID': productID, 'Quantity': quantity };
@@ -85,8 +87,7 @@ function DisplayBasket() {
     redirector();
 }
 
-function GetKeys() {
-
+function GetKeys() { // Gets all keys in session storage and stores them in local storage
     var keys = [];
     localStorage.removeItem("allKeys");
 
@@ -102,25 +103,45 @@ function CartDisplay() {
     //alert(collectiveProducts);
     var keys = collectiveProducts.split(',');
 
+    var counter = 1;
+    // Display each product in the basket here
     for (var i = 0; i < keys.length; i++) {
         var prod = sessionStorage.getItem(keys[i]);
         prod = JSON.parse(prod);
-        $("div.panel-body").append('<div class="row"><div class="col-xs-2"><img class="img-responsive" src="http://placehold.it/100x70"></div><div class="col-xs-4"><h4 class="product-name"><strong>' + prod.Name + '</strong></h4><h4><small>Product description</small></h4></div><div class="col-xs-6"><div class="col-xs-6 text-right"><h6><strong>' + prod.Price + '<span class="text-muted">x</span></strong></h6></div><div class="col-xs-4"><input type="text" class="form-control input-sm" value="' + prod.Quantity + '"></div><div class="col-xs-2"><button type="button" class="btn btn-link btn-xs" onclick="RemoveItem(' + prod.ID + ')"><span class="glyphicon glyphicon-trash"> </span></button></div></div></div>');
+        $("div.panel-body").append('<div class="row"><div class="col-xs-2"><img class="img-responsive" src="http://placehold.it/100x70"></div><div class="col-xs-4"><h4 class="product-name"><strong>' + prod.Name + '</strong></h4><h4><small>Product description</small></h4></div><div class="col-xs-6"><div class="col-xs-6 text-right"><h6><strong><div class="pricedProds">' + prod.Price + '</div><span class="text-muted"> x</span></strong></h6></div><div class="col-xs-4"><input type="text" name="basketProds" class="form-control input-sm" value="' + prod.Quantity + '"></div><div class="col-xs-2"><button type="button" class="btn btn-link btn-xs" onclick="RemoveItem(' + prod.ID + ')"><span class="glyphicon glyphicon-trash"> </span></button></div></div></div>');
         var price = prod.Price * prod.Quantity;
         totalPrice += price;
+        // Increment counter for each productID in the Basket
+        counter++;
     }
 
     document.getElementById("myPrice").innerHTML = totalPrice;
 }
 
-function Product(temp) {
+function UpdateCart() {
+    var quantities = [];
+    var price = 0;
+
+    for (var i = 0; i < document.getElementsByName("basketProds").length; i++) {
+        quantities[i] = document.getElementsByName("basketProds")[i].value;
+    }
+
+    for (var j = 0; j < $(".pricedProds").length; j++) {
+        price += (quantities[j] * parseFloat($(".pricedProds")[j].innerHTML).toFixed(2));
+    }
+
+    document.getElementById("myPrice").innerHTML = price;
+}
+
+function Product(temp) { // Model for each product in the basket
     this.ID = temp[0];
     this.Quantity = temp[1];
     this.Name = temp[2];
     this.Price = temp[3];
+    this.Image = temp[4];
 }
 
-function RemoveItem(productID) {
+function RemoveItem(productID) { // Removes an item from the basket
     sessionStorage.removeItem("basketItem" + productID);
     GetKeys();
     location.reload();

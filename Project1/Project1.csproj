@@ -120,6 +120,7 @@
     <Content Include="register.cshtml" />
     <Content Include="shop.cshtml" />
     <Content Include="cart.cshtml" />
+    <Content Include="checkout.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
