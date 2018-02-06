@@ -1,4 +1,10 @@
-﻿<!DOCTYPE html>
+﻿@using Project1;
+
+@{
+//Checkout.SendEmail();
+//Checkout.SendTextMessage();
+}
+<!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
@@ -194,8 +200,8 @@
                 outline: none;
             }
 
-        .myCart {
-            margin-left: 15em;
+        #basketView {
+            margin-left: 37em;
         }
     </style>
     <!-- End demo purposes only -->
@@ -207,7 +213,7 @@
     <![endif]-->
 
 </head>
-<body onload="CartDisplay()">
+<body onload="ShowDetails()">
     <header role="banner" id="fh5co-header">
         <div class="container">
             <!-- <div class="row"> -->
@@ -215,7 +221,7 @@
                 <div class="navbar-header">
                     <!-- Mobile Toggle Menu Button -->
                     <a href="#" class="js-fh5co-nav-toggle fh5co-nav-toggle" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar"><i></i></a>
-                    <a class="navbar-brand" href="~/home.cshtml"> Basket</a>
+                    <a class="navbar-brand" href="~/home.cshtml">Welcome  !</a>
                 </div>
                 <div id="navbar" class="navbar-collapse collapse">
                     <ul class="nav navbar-nav navbar-right">
@@ -234,58 +240,20 @@
 
     <!-- Dipslay Product Area -->
     <section id="fh5co-work" data-section="work">
-        <div class="myCart">
-            <div class="container">
-                <div class="row">
-                    <div class="col-xs-8">
-                        <div class="panel panel-info">
-                            <div class="panel-heading">
-                                <div class="panel-title">
-                                    <div class="row">
-                                        <div class="col-xs-6">
-                                            <h5><span class="glyphicon glyphicon-shopping-cart"></span> Shopping Cart</h5>
-                                        </div>
-                                        <div class="col-xs-6">
-                                            <button type="button" class="btn btn-primary btn-sm btn-block" onclick="javascript: window.location.href = 'shop.cshtml'; return false;">
-                                                <span class="glyphicon glyphicon-share-alt"></span> Continue shopping
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="panel-body">
+        <div class="container">
+            <div class="row">
+                <h2><strong>Order Confirmation</strong></h2>
 
-                                <hr>
-
-                                <div class="row">
-                                    <div class="text-center">
-                                        <div class="col-xs-9">
-                                            <h6 class="text-right">Added items?</h6>
-                                        </div>
-                                        <div class="col-xs-3">
-                                            <button type="button" id="updateBasket" class="btn btn-default btn-sm btn-block">
-                                                Update cart
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="panel-footer">
-                                <div class="row text-center">
-                                    <div class="col-xs-9">
-                                        <h4 class="text-right">Total &euro;<strong id="myPrice"></strong></h4>
-                                    </div>
-                                    <div class="col-xs-3">
-                                        <button type="button" class="btn btn-success btn-block" id="checkoutBtn">
-                                            Checkout
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                <div>
+                    <h4><strong>Order Details</strong></h4>
+                    <div id="OrderDetails"></div>
+                </div>
+                <div>
+                    <h4 id="shippingAddress"><strong>Shipping Address</strong></h4>
+                    
                 </div>
             </div>
+           
         </div>
     </section>
     <!-- The Footer -->
@@ -321,7 +289,7 @@
     <script src="js/jquery.stellar.min.js"></script>
     <!-- Counter -->
     <script src="js/jquery.countTo.js"></script>
-    <!-- shop/cart necessary javascript code-->
+    <!-- shop necessary javascript code-->
     <script src="js/programmerDefined.js"></script>
     <!-- Magnific Popup -->
     <script src="js/jquery.magnific-popup.min.js"></script>

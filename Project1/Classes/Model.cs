@@ -7,6 +7,9 @@ using System.Data.SqlClient;
 using System.Data;
 using System.Net.Mail;
 using System.Text;
+using Twilio;
+using Twilio.Rest.Api.V2010.Account;
+using Twilio.Types;
 
 namespace Project1
 {
@@ -65,6 +68,23 @@ namespace Project1
         #endregion
     }
 
+    public class Category
+    {
+        public string Name { get; set; }
+        public string ID { get; set; }
+
+        public Category()
+        {
+
+        }
+
+        public Category(string _name, string _id) : this ()
+        {
+            this.Name = _name;
+            this.ID = _id;
+        }
+    }
+
     public class DatabaseControl
     {
         static public void AddBasketItem()
@@ -100,12 +120,12 @@ namespace Project1
         {
             List<Product> products = new List<Product>();
 
-            using (SqlConnection boothtest = new SqlConnection("Server=tcp:boothserver.database.windows.net,1433;" +
-                "Initial Catalog=boothtest;Persist Security Info=False;" +
-                "User ID=S00163774;Password=BOOTHserver%163774;" +
-                "MultipleActiveResultSets=False;Encrypt=True;" +
-                "TrustServerCertificate=False;Connection Timeout=30;"))
+            string db = ConfigurationManager.ConnectionStrings["Connection"].ConnectionString;
+
+            using (SqlConnection boothtest = new SqlConnection(db))
             {
+                //"Server=tcp:boothserver.database.windows.net,1433;" + "Initial Catalog=boothtest;Persist Security Info=False;" + "User ID=S00163774;Password=BOOTHserver%163774;" + "MultipleActiveResultSets=False;Encrypt=True;" + "TrustServerCertificate=False;Connection Timeout=30;"
+
                 using (SqlCommand ProductsCMD = new SqlCommand("ReturnProducts", boothtest))
                 {
                     ProductsCMD.CommandType = CommandType.StoredProcedure;
@@ -118,14 +138,15 @@ namespace Project1
 
                     while (myReader.Read())
                     {
-                        Product product = new Product();
-
-                        product.ProductID = myReader["ProductID"].ToString();
-                        product.Name = myReader["ProductName"].ToString();
-                        //product.ProductDesc = myReader["ProductDesc"].ToString();
-                        product.Price = decimal.Parse(myReader["ProductPrice"].ToString());
-                        //product.ProductStock = int.Parse(myReader["ProductStock"].ToString());
-                        product.ImageUrl = myReader["ProductURL"].ToString();
+                        Product product = new Product
+                        {
+                            ProductID = myReader["ProductID"].ToString(),
+                            Name = myReader["ProductName"].ToString(),
+                            Description = myReader["ProductDesc"].ToString(),
+                            Price = decimal.Parse(myReader["ProductPrice"].ToString()),
+                            //product.ProductStock = int.Parse(myReader["ProductStock"].ToString());
+                            ImageUrl = myReader["ProductURL"].ToString()
+                        };
                         //product.ProductCategoryID = int.Parse(myReader["ProductCategoryID"].ToString());
 
                         products.Add(product);
@@ -182,7 +203,7 @@ namespace Project1
             }
         }
 
-        static public void AddToBasket(string prodID,string UserID, string Quantity)
+        static public void AddToBasket(string prodID, string UserID, string Quantity)
         {
 
         }
@@ -287,6 +308,44 @@ namespace Project1
         //        return emailExists;
         //    }
         //}
+
+        public static List<Category> GetCategories()
+        {
+            List<Category> categories = new List<Category>();
+
+            string db = ConfigurationManager.ConnectionStrings["Connection"].ConnectionString;
+
+            using (SqlConnection boothtest = new SqlConnection(db))
+            {
+                //"Server=tcp:boothserver.database.windows.net,1433;" + "Initial Catalog=boothtest;Persist Security Info=False;" + "User ID=S00163774;Password=BOOTHserver%163774;" + "MultipleActiveResultSets=False;Encrypt=True;" + "TrustServerCertificate=False;Connection Timeout=30;"
+
+                using (SqlCommand CategoryCMD = new SqlCommand("ReturnCategories", boothtest))
+                {
+                    CategoryCMD.CommandType = CommandType.StoredProcedure;
+
+                    boothtest.Open();
+
+                    SqlDataReader myReader = CategoryCMD.ExecuteReader();
+
+                    categories = new List<Category>();
+
+                    while (myReader.Read())
+                    {
+                        Category category = new Category
+                        {
+                            ID = myReader["ID"].ToString(),
+                            Name = myReader["CategoryName"].ToString(),
+                        };
+
+                        categories.Add(category);
+                    }
+
+                    myReader.Close();
+                    boothtest.Close();
+                }
+            }
+            return categories;
+        }
     }
 
     public class Basket
@@ -321,6 +380,44 @@ namespace Project1
 
     public class Checkout
     {
+        public static void SendEmail(string emailUser)
+        {
+            MailMessage Msg = new MailMessage();
+            Msg.From = new MailAddress("owenexampletest@gmail.com");
+            Msg.To.Add(emailUser);
+            Msg.Subject = "This is the Test Subject";
+            Msg.Body = "This is the Test Body for the Project 300 email confirmation.";
+            SmtpClient smtp = new SmtpClient();
+            smtp.Host = "smtp.gmail.com";
+            smtp.Port = 587;
+            smtp.Credentials = new System.Net.NetworkCredential("project300email@gmail.com", "Project300");
+            smtp.EnableSsl = true;
+            smtp.Send(Msg);
+            //Console.WriteLine("Email Sent!");
+        }
 
+        public static void SendTextMessage(string number)
+        {
+            if (number.Length == 10)
+            {
+                number = number.Remove(0,1);
+            }
+
+            // Your Account SID from twilio.com/console
+            var accountSid = "AC0870a5e30dece345258735402d9f8e33";
+            // Your Auth Token from twilio.com/console
+            var authToken = "3a211e065304d39b9d5f699449fe7bcd";
+
+            TwilioClient.Init(accountSid, authToken);
+
+            var message = MessageResource.Create(
+                to: new PhoneNumber("+353" + number),
+                from: new PhoneNumber("+353861802018"),
+                body: "Mo n fi message se testing fun project 300 mi. L'agbara Olorun o ma sise.");
+
+            Console.WriteLine(message.Sid);
+            Console.Write("Press any key to continue.");
+            Console.ReadKey();
+        }
     }
 }

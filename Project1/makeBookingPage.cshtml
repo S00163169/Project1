@@ -1,4 +1,17 @@
-﻿<!DOCTYPE html>
+﻿@using Project1;
+@{
+    List<Category> categories = DatabaseControl.GetCategories();
+
+    string _id;
+
+    if (Session["UserID"] != null)
+    {
+        _id = Session["UserID"].ToString();
+    }
+
+}
+
+<!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
@@ -194,8 +207,9 @@
                 outline: none;
             }
 
-        .myCart {
-            margin-left: 15em;
+
+        div.fh5co-text {
+            text-align: center;
         }
     </style>
     <!-- End demo purposes only -->
@@ -207,7 +221,7 @@
     <![endif]-->
 
 </head>
-<body onload="CartDisplay()">
+<body>
     <header role="banner" id="fh5co-header">
         <div class="container">
             <!-- <div class="row"> -->
@@ -215,7 +229,7 @@
                 <div class="navbar-header">
                     <!-- Mobile Toggle Menu Button -->
                     <a href="#" class="js-fh5co-nav-toggle fh5co-nav-toggle" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar"><i></i></a>
-                    <a class="navbar-brand" href="~/home.cshtml"> Basket</a>
+                    <a class="navbar-brand" href="~/home.cshtml">Welcome  !</a>
                 </div>
                 <div id="navbar" class="navbar-collapse collapse">
                     <ul class="nav navbar-nav navbar-right">
@@ -234,57 +248,29 @@
 
     <!-- Dipslay Product Area -->
     <section id="fh5co-work" data-section="work">
-        <div class="myCart">
-            <div class="container">
-                <div class="row">
-                    <div class="col-xs-8">
-                        <div class="panel panel-info">
-                            <div class="panel-heading">
-                                <div class="panel-title">
-                                    <div class="row">
-                                        <div class="col-xs-6">
-                                            <h5><span class="glyphicon glyphicon-shopping-cart"></span> Shopping Cart</h5>
-                                        </div>
-                                        <div class="col-xs-6">
-                                            <button type="button" class="btn btn-primary btn-sm btn-block" onclick="javascript: window.location.href = 'shop.cshtml'; return false;">
-                                                <span class="glyphicon glyphicon-share-alt"></span> Continue shopping
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 section-heading text-center">
+                    <h2 class="to-animate">Products</h2>
+                </div>
+            </div>
+            <div class="row row-bottom-padded-sm">
+                @foreach (Category category in categories)
+                {
+                    <div class="col-md-4 col-sm-6 col-xxs-12">
+                        <div class="fh5co-project-item">
+                            <img src="images/work_1.jpg" alt="Image" class="img-responsive">
+                            <div class="fh5co-text">
+                                <h2>@category.Name</h2>
                             </div>
-                            <div class="panel-body">
-
-                                <hr>
-
-                                <div class="row">
-                                    <div class="text-center">
-                                        <div class="col-xs-9">
-                                            <h6 class="text-right">Added items?</h6>
-                                        </div>
-                                        <div class="col-xs-3">
-                                            <button type="button" id="updateBasket" class="btn btn-default btn-sm btn-block">
-                                                Update cart
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="panel-footer">
-                                <div class="row text-center">
-                                    <div class="col-xs-9">
-                                        <h4 class="text-right">Total &euro;<strong id="myPrice"></strong></h4>
-                                    </div>
-                                    <div class="col-xs-3">
-                                        <button type="button" class="btn btn-success btn-block" id="checkoutBtn">
-                                            Checkout
-                                        </button>
-                                    </div>
-                                </div>
+                            <div class="form-group text-center">
+                                <button class="btn btn-primary btn-sm" name="addToBasket" type="submit" onclick="">Make Booking</button>
                             </div>
                         </div>
                     </div>
-                </div>
+                }
+            </div>
+            <div class="row">
             </div>
         </div>
     </section>
@@ -309,6 +295,44 @@
             </div>
         </div>
     </footer>
+
+    <!-- For demo purposes Only ( You may delete this anytime :-) -->
+    @*<div id="colour-variations">
+            <a class="option-toggle"><i class="icon-gear"></i></a>
+            <h3>Preset Colors</h3>
+            <ul>
+                <li>
+                    <a href="javascript: void(0);" data-theme="style">
+                        <span style="background: #3f95ea;"></span>
+                        <span style="background: #52d3aa;"></span>
+                        <span style="background: #f2f2f2;"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript: void(0);" data-theme="style2">
+                        <span style="background: #329998;"></span>
+                        <span style="background: #6cc99c;"></span>
+                        <span style="background: #f2f2f2;"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript: void(0);" data-theme="style3">
+                        <span style="background: #9f466e;"></span>
+                        <span style="background: #c24d67;"></span>
+                        <span style="background: #f2f2f2;"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript: void(0);" data-theme="style4">
+                        <span style="background: #21825C;"></span>
+                        <span style="background: #A4D792;"></span>
+                        <span style="background: #f2f2f2;"></span>
+                    </a>
+                </li>
+
+            </ul>
+        </div>*@
+    <!-- End demo purposes only -->
     <!-- jQuery -->
     <script src="js/jquery.min.js"></script>
     <!-- jQuery Easing -->
@@ -321,7 +345,7 @@
     <script src="js/jquery.stellar.min.js"></script>
     <!-- Counter -->
     <script src="js/jquery.countTo.js"></script>
-    <!-- shop/cart necessary javascript code-->
+    <!-- shop necessary javascript code-->
     <script src="js/programmerDefined.js"></script>
     <!-- Magnific Popup -->
     <script src="js/jquery.magnific-popup.min.js"></script>
