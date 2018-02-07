@@ -1,7 +1,13 @@
-﻿using System;
+﻿using Google.Apis.Auth.OAuth2;
+using Google.Apis.Calendar.v3;
+using Google.Apis.Calendar.v3.Data;
+using Google.Apis.Services;
+using Google.Apis.Util.Store;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
+using System.IO;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.Data;
@@ -10,6 +16,7 @@ using System.Text;
 using Twilio;
 using Twilio.Rest.Api.V2010.Account;
 using Twilio.Types;
+using System.Threading;
 
 namespace Project1
 {
@@ -87,6 +94,7 @@ namespace Project1
 
     public class DatabaseControl
     {
+        static string Db = ConfigurationManager.ConnectionStrings["Connection"].ConnectionString;
         static public void AddBasketItem()
         {
             #region DB Connection and Inputs
@@ -208,52 +216,52 @@ namespace Project1
 
         }
 
-        //static public User LogIn(string email, string password)
-        //{
-        //    User user = new User();
+        static public User LogIn(string email, string password)
+        {
+            User user = new User();
 
-        //    using (SqlConnection boothtest = new SqlConnection("Server=tcp:boothserver.database.windows.net,1433;" +
-        //        "Initial Catalog=boothtest;Persist Security Info=False;" +
-        //        "User ID=S00163774;Password=BOOTHserver%163774;" +
-        //        "MultipleActiveResultSets=False;Encrypt=True;" +
-        //        "TrustServerCertificate=False;Connection Timeout=30;"))
-        //    {
-        //        using (SqlCommand LogInCMD = new SqlCommand("LogIn", boothtest)) // Create New Command calling 'LogIn' stored procedure in boothtest database
-        //        {
-        //            LogInCMD.CommandType = CommandType.StoredProcedure;
+            using (SqlConnection boothtest = new SqlConnection("Server=tcp:boothserver.database.windows.net,1433;" +
+                "Initial Catalog=boothtest;Persist Security Info=False;" +
+                "User ID=S00163774;Password=BOOTHserver%163774;" +
+                "MultipleActiveResultSets=False;Encrypt=True;" +
+                "TrustServerCertificate=False;Connection Timeout=30;"))
+            {
+                using (SqlCommand LogInCMD = new SqlCommand("LogIn", boothtest)) // Create New Command calling 'LogIn' stored procedure in boothtest database
+                {
+                    LogInCMD.CommandType = CommandType.StoredProcedure;
 
-        //            // Input Variables
-        //            SqlParameter inputEmail = LogInCMD.Parameters.Add("@ExUserEmail", SqlDbType.NVarChar, 30);
-        //            inputEmail.Direction = ParameterDirection.Input;
+                    // Input Variables
+                    SqlParameter inputEmail = LogInCMD.Parameters.Add("@ExUserEmail", SqlDbType.NVarChar, 30);
+                    inputEmail.Direction = ParameterDirection.Input;
 
-        //            SqlParameter inputPassword = LogInCMD.Parameters.Add("@ExuserPassword", SqlDbType.NVarChar, 30);
-        //            inputPassword.Direction = ParameterDirection.Input;
+                    SqlParameter inputPassword = LogInCMD.Parameters.Add("@ExuserPassword", SqlDbType.NVarChar, 30);
+                    inputPassword.Direction = ParameterDirection.Input;
 
-        //            inputEmail.Value = email;
-        //            inputPassword.Value = password;
+                    inputEmail.Value = email;
+                    inputPassword.Value = password;
 
-        //            boothtest.Open(); // Open Database Connection
+                    boothtest.Open(); // Open Database Connection
 
-        //            SqlDataReader myReader = LogInCMD.ExecuteReader(); // Execute Command
+                    SqlDataReader myReader = LogInCMD.ExecuteReader(); // Execute Command
 
-        //            while (myReader.Read())
-        //            {
-        //                user.UserID = int.Parse(myReader["UserID"].ToString());
-        //                user.UserFirstName = myReader["UserFirstName"].ToString();
-        //                user.UserSurname = myReader["UserSurname"].ToString();
-        //                user.UserMobileNumber = myReader["UserMobileNumber"].ToString();
-        //                user.UserEmail = myReader["UserEmail"].ToString();
-        //                user.UserType = myReader["UserType"].ToString();
-        //            }
+                    while (myReader.Read())
+                    {
+                        user.UserID = int.Parse(myReader["UserID"].ToString());
+                        user.UserFirstName = myReader["UserFirstName"].ToString();
+                        user.UserSurname = myReader["UserSurname"].ToString();
+                        user.UserMobileNumber = myReader["UserMobileNumber"].ToString();
+                        user.UserEmail = myReader["UserEmail"].ToString();
+                        user.UserType = myReader["UserType"].ToString();
+                    }
 
-        //            myReader.Close(); // Close Command
+                    myReader.Close(); // Close Command
 
-        //            boothtest.Close(); // Close Database Connection
-        //        }
-        //    }
+                    boothtest.Close(); // Close Database Connection
+                }
+            }
 
-        //    return user;
-        //}
+            return user;
+        }
 
         //static public string Register(string firstname, string surname, string mobilenumber, string email, string password)
         //{
@@ -346,6 +354,153 @@ namespace Project1
             }
             return categories;
         }
+
+        static List<int> GetTakenTimes()
+        {
+            using (SqlConnection db = new SqlConnection(Db))
+            {
+                List<int> slotsTaken = new List<int>();
+
+                using (SqlCommand DatesCMD = new SqlCommand("GetDates", db))
+                {
+                    DatesCMD.CommandType = CommandType.StoredProcedure;
+
+                    db.Open();
+
+                    SqlDataReader myReader = DatesCMD.ExecuteReader();
+
+                    while (myReader.Read())
+                    {
+                        int slot = int.Parse(myReader["Slot"].ToString());
+
+                        slotsTaken.Add(slot);
+                    }
+
+                    myReader.Close();
+                    db.Close();
+
+                    return slotsTaken;
+                }
+            }
+        }
+
+        static public void GetFreeTimes(List<int> list)
+        { 
+            List<string> times = new List<string>();
+
+            if (!list.Contains(1))
+            {
+                times.Add("9:00");
+            }
+            if (!list.Contains(2))
+            {
+                times.Add("9:30");
+            }
+            if (!list.Contains(3))
+            {
+                times.Add("10:00");
+            }
+            if (!list.Contains(4))
+            {
+                times.Add("10:30");
+            }
+            if (!list.Contains(5))
+            {
+                times.Add("11:00");
+            }
+            if (!list.Contains(6))
+            {
+                times.Add("11:30");
+            }
+            if (!list.Contains(7))
+            {
+                times.Add("12:00");
+            }
+            if (!list.Contains(8))
+            {
+                times.Add("12:30");
+            }
+            if (!list.Contains(9))
+            {
+                times.Add("13:00");
+            }
+            if (!list.Contains(10))
+            {
+                times.Add("13:30");
+            }
+            if (!list.Contains(11))
+            {
+                times.Add("14:00");
+            }
+            if (!list.Contains(12))
+            { 
+                times.Add("14:30");
+            }
+            if (!list.Contains(13))
+            {
+                times.Add("15:00");
+            }
+            if (!list.Contains(14))
+            {
+                times.Add("15:30");
+            }
+            if (!list.Contains(15))
+            {
+                times.Add("16:00");
+            }
+            if (!list.Contains(16))
+            {
+                times.Add("16:30");
+            }
+            if (!list.Contains(17))
+            {
+                times.Add("17:00");
+            }
+            if (!list.Contains(18))
+            {
+                times.Add("17:30");
+            }
+        }
+
+        static public int InsertBooking(string Name, string Category, int Slot, string email)
+        {
+            int result = 0;
+            using (SqlConnection db = new SqlConnection(Db))
+            {
+                using (SqlCommand InsertBookingCMD = new SqlCommand("InsertBooking", db))
+                {
+                    InsertBookingCMD.CommandType = CommandType.StoredProcedure;
+
+                    SqlParameter inputEmail = InsertBookingCMD.Parameters.Add("@EEmail", SqlDbType.NVarChar);
+                    inputEmail.Direction = ParameterDirection.Input;
+
+                    SqlParameter inputName = InsertBookingCMD.Parameters.Add("@EBookingName", SqlDbType.NVarChar, 50);
+                    inputName.Direction = ParameterDirection.Input;
+
+                    SqlParameter inputSlot = InsertBookingCMD.Parameters.Add("@ESlot", SqlDbType.Float);
+                    inputSlot.Direction = ParameterDirection.Input;
+
+                    SqlParameter inputProcedure = InsertBookingCMD.Parameters.Add("@EProcedure", SqlDbType.NVarChar, 50);
+                    inputProcedure.Direction = ParameterDirection.Input;
+
+                    SqlParameter Result = InsertBookingCMD.Parameters.Add("Result", SqlDbType.Bit);
+                    Result.Direction = ParameterDirection.ReturnValue;
+
+                    inputEmail.Value = email;
+                    inputName.Value = Name;
+                    inputSlot.Value = Slot;
+                    inputProcedure.Value = Category;
+
+                    db.Open();
+
+                    SqlDataReader rdr = InsertBookingCMD.ExecuteReader();
+
+                    result = Convert.ToInt32(Result.Value);
+
+                    return result;
+                }
+            }
+        }
     }
 
     public class Basket
@@ -419,5 +574,81 @@ namespace Project1
             Console.Write("Press any key to continue.");
             Console.ReadKey();
         }
+    }
+
+    class Calendar
+    {
+        // If modifying these scopes, delete your previously saved credentials
+        // at ~/.credentials/calendar-dotnet-quickstart.json
+        static string[] Scopes = { CalendarService.Scope.CalendarReadonly };
+        static string ApplicationName = "Google Calendar API .NET Quickstart";
+
+        static void Main(string[] args)
+        {
+            UserCredential credential;
+
+            using (var stream =
+                new FileStream("client_secret.json", FileMode.Open, FileAccess.Read))
+            {
+                string credPath = System.Environment.GetFolderPath(
+                    System.Environment.SpecialFolder.Personal);
+                credPath = Path.Combine(credPath, ".credentials/calendar-dotnet-quickstart.json");
+
+                credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
+                    GoogleClientSecrets.Load(stream).Secrets,
+                    Scopes,
+                    "user",
+                    CancellationToken.None,
+                    new FileDataStore(credPath, true)).Result;
+                Console.WriteLine("Credential file saved to: " + credPath);
+            }
+
+            // Create Google Calendar API service.
+            var service = new CalendarService(new BaseClientService.Initializer()
+            {
+                HttpClientInitializer = credential,
+                ApplicationName = ApplicationName,
+            });
+
+            // Define parameters of request.
+            EventsResource.ListRequest request = service.Events.List("primary");
+            request.TimeMin = DateTime.Now;
+            request.ShowDeleted = false;
+            request.SingleEvents = true;
+            request.MaxResults = 10;
+            request.OrderBy = EventsResource.ListRequest.OrderByEnum.StartTime;
+
+            // List events.
+            Events events = request.Execute();
+            Console.WriteLine("Upcoming events:");
+            if (events.Items != null && events.Items.Count > 0)
+            {
+                foreach (var eventItem in events.Items)
+                {
+                    string when = eventItem.Start.DateTime.ToString();
+                    if (String.IsNullOrEmpty(when))
+                    {
+                        when = eventItem.Start.Date;
+                    }
+                    Console.WriteLine("{0} ({1})", eventItem.Summary, when);
+                }
+            }
+            else
+            {
+                Console.WriteLine("No upcoming events found.");
+            }
+            Console.Read();
+
+        }
+    }
+
+    public class User
+    {
+        public int UserID { get; set; }
+        public string UserFirstName { get; set; }
+        public string UserSurname { get; set; }
+        public string UserMobileNumber { get; set; }
+        public string UserEmail { get; set; }
+        public string UserType { get; set; }
     }
 }

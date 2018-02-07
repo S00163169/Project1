@@ -192,11 +192,10 @@ function OrderDetails(temp) { // Model for each product in the basket
     this.Address1 = temp[2];
     this.Address2 = temp[3]
     this.postCode = temp[4];
- 
+
 }
 
-function ShippingDetails()
-{
+function ShippingDetails() {
     var name = $('#name').val();
     var email = $('#email').val();
     var address1 = $('#Address1').val();
@@ -204,13 +203,12 @@ function ShippingDetails()
 
     var details;
 
-    if ($('#Address2').val() != null)
-    {
+    if ($('#Address2').val() != null) {
         var address2 = $('#Address2').val();
         details = [name, email, address1, address2, postCode];
     }
     else {
-        
+
         details = [name, email, address1, " ", postCode];
     }
 
@@ -219,8 +217,7 @@ function ShippingDetails()
     sessionStorage.setItem('details', JSON.stringify(deets));
 }
 
-function ShowDetails()
-{
+function ShowDetails() {
     // Get shipping details of customer from sesiion storage  
     var details = JSON.parse(sessionStorage.getItem('details'));
     // Get all the keys that are in session storage 
@@ -247,4 +244,12 @@ function ShowDetails()
     var postcd = details.postCode.toUpperCase();
 
     $('#shippingAddress').after('<div><strong>' + details.Name + '</strong></div> <div><strong>' + details.Address1 + '</strong></div> <div><strong>' + details.Address2 + '</strong></div> <div><strong>Sligo</strong></div> <div><strong>' + postcd + '</strong></div> <div>Ireland</div>');
+}
+
+function BookAppointment(clicked_Name) {
+    var CategoryName = clicked_Name;
+
+    sessionStorage.setItem('categoryName', JSON.stringify(CategoryName));
+
+    window.location.href = "pay.cshtml";
 }

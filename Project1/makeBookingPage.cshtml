@@ -9,6 +9,8 @@
         _id = Session["UserID"].ToString();
     }
 
+    
+
 }
 
 <!DOCTYPE html>
@@ -264,7 +266,7 @@
                                 <h2>@category.Name</h2>
                             </div>
                             <div class="form-group text-center">
-                                <button class="btn btn-primary btn-sm" name="addToBasket" type="submit" onclick="">Make Booking</button>
+                                <button class="btn btn-primary btn-sm" name="addToBasket" type="submit" onclick="BookAppointment('@category.Name')">Make Booking</button>
                             </div>
                         </div>
                     </div>
@@ -345,7 +347,7 @@
     <script src="js/jquery.stellar.min.js"></script>
     <!-- Counter -->
     <script src="js/jquery.countTo.js"></script>
-    <!-- shop necessary javascript code-->
+    <!-- booking necessary javascript code-->
     <script src="js/programmerDefined.js"></script>
     <!-- Magnific Popup -->
     <script src="js/jquery.magnific-popup.min.js"></script>
@@ -372,6 +374,16 @@
                 $('#colour-variations').toggleClass('sleep');
             });
         });
+
+        function BookAppointment(clicked_Name) {
+            var CategoryName = clicked_Name;
+
+            sessionStorage.setItem('categoryName', JSON.stringify(CategoryName));
+
+            alert("done");
+
+            window.location.href = "pay.cshtml";
+        }
     </script>
     <!-- End demo purposes only -->
     <!-- Main JS (Do not remove) -->

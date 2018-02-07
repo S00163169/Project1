@@ -45,7 +45,8 @@
             {
                 Session["Name"] = loginCheck[i].Firstname;
                 Session["UserID"] = loginCheck[i].UserID;
-                Response.Redirect("home.cshtml");
+                Session["UserEmail"] = loginCheck[i].Email;
+                Response.Redirect("makeBookingPage.cshtml");
             }
 
             if (loginCheck[i].Email != email && loginCheck[i].Password != password && i == loginCheck.Length - 1)
