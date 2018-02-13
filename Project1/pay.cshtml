@@ -3,26 +3,27 @@
 @using Project1;
 @{
     var message = "";
+    int times = 1;
+    List<string> timeSlots = new List<string>();
+    var date = DateTime.Now;
+    var thisDate = Convert.ToString(DateTime.Now);
 
     if (IsPost)
     {
-        User user = new User();
-
+        thisDate = Request.Form["datepicker"];
+        date = Convert.ToDateTime(thisDate);
         var today = DateTime.Now;
-        var date = Convert.ToDateTime(Request.Form["datepicker"]);
+        var dateTaken = Convert.ToDateTime(Request.Form["datepicker"]);
 
-
-        if (date > today)
+        if (dateTaken > today)
         {
-            //user = DatabaseControl.LogIn(Request.Form["datepicker"], Request.Form["time"]);
+            //string UserName = Session["Name"].ToString();
+            //string UserEmail = Session["UserEmail"].ToString();
+            //string Category = Session["categoryName"].ToString();
 
-            string UserName = Session["Name"].ToString();
-            string UserEmail = Session["UserEmail"].ToString();
-            string Category = Session["categoryName"].ToString();
+            //DatabaseControl.InsertBooking(UserName, Category, 1, UserEmail);
 
-            DatabaseControl.InsertBooking(UserName, Category, 1,UserEmail);
-
-            Response.Redirect("BookingConfirmed.cshtml");
+            //Response.Redirect("BookingConfirmed.cshtml");
         }
 
         else
@@ -98,6 +99,12 @@
 
     -->
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        #continueBtn, #timeSlots {
+            margin-top: 3em;
+            text-align: center;
+        }
+    </style>
 
     <!-- Modernizr JS -->
     <script src="js/modernizr-2.6.2.min.js"></script>
@@ -150,14 +157,26 @@
                         <h3>Log In</h3>
                         <div class="form-group ">
                             <label for="datepicker" class="sr-only">Select Date</label>
-                            <input id="datepicker" class="form-control" placeholder="Date" type="date" name="datepicker" onchange="">@message
+                            <input id="datepicker" class="form-control" placeholder="Date" type="date" value="@thisDate" name="datepicker" oninput="">@message
                         </div>
                         <div class="form-group ">
                             <label for="time" class="sr-only">Select Time</label>
                             <input id="time" class="form-control" placeholder="Time" type="time" name="time">
                         </div>
                         <div class="form-group ">
-                            <input class="btn btn-primary btn-lg" value="Log In" type="submit">
+                            <div id="continueBtn"><input id="" class="btn btn-primary btn-lg" value="Update Time Slots" type="submit"></div>
+                        </div>
+                        <div class="form-group ">
+                            <div id="timeSlots">
+                                @for (int i = 0; i < DatabaseControl.TimeSlots(Convert.ToDateTime(date)).Count; i++)
+                                {
+                                    <input id="slot_@times" class="btn btn-primary btn-lg" value="@DatabaseControl.TimeSlots(Convert.ToDateTime(date))[i]" type="button" onclick="GetTime(id)">
+                                    times++;
+                                }
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <div id="continueBtn"><input id="" class="btn btn-primary btn-lg" value="Continue" type="submit"></div>
                         </div>
                     </div>
                 </form>

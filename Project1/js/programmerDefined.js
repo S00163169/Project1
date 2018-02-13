@@ -253,3 +253,10 @@ function BookAppointment(clicked_Name) {
 
     window.location.href = "pay.cshtml";
 }
+
+function GetTime(clicked_id)
+{
+    var timeSlot = document.getElementById(clicked_id).innerHTML;
+
+    alert(timeSlot);
+}

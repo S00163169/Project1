@@ -355,7 +355,14 @@ namespace Project1
             return categories;
         }
 
-        static List<int> GetTakenTimes()
+        public static List<string> TimeSlots(DateTime date)
+        {
+            List<int> takenTimes = GetTakenTimes(date);
+            List<string> availableTimes = GetFreeTimes(takenTimes);
+            return availableTimes;
+        }
+
+        static List<int> GetTakenTimes(DateTime date)
         {
             using (SqlConnection db = new SqlConnection(Db))
             {
@@ -364,6 +371,11 @@ namespace Project1
                 using (SqlCommand DatesCMD = new SqlCommand("GetDates", db))
                 {
                     DatesCMD.CommandType = CommandType.StoredProcedure;
+
+                    SqlParameter inputDate = DatesCMD.Parameters.Add("@EDate", SqlDbType.DateTime);
+                    inputDate.Direction = ParameterDirection.Input;
+
+                    inputDate.Value = date;
 
                     db.Open();
 
@@ -384,17 +396,17 @@ namespace Project1
             }
         }
 
-        static public void GetFreeTimes(List<int> list)
+        static public List<string> GetFreeTimes(List<int> list)
         { 
             List<string> times = new List<string>();
 
             if (!list.Contains(1))
             {
-                times.Add("9:00");
+                times.Add("09:00");
             }
             if (!list.Contains(2))
             {
-                times.Add("9:30");
+                times.Add("09:30");
             }
             if (!list.Contains(3))
             {
@@ -460,6 +472,8 @@ namespace Project1
             {
                 times.Add("17:30");
             }
+
+            return times;
         }
 
         static public int InsertBooking(string Name, string Category, int Slot, string email)
