@@ -85,7 +85,7 @@ namespace Project1
 
         }
 
-        public Category(string _name, string _id) : this ()
+        public Category(string _name, string _id) : this()
         {
             this.Name = _name;
             this.ID = _id;
@@ -209,11 +209,6 @@ namespace Project1
                     return product;
                 }
             }
-        }
-
-        static public void AddToBasket(string prodID, string UserID, string Quantity)
-        {
-
         }
 
         static public User LogIn(string email, string password)
@@ -396,8 +391,8 @@ namespace Project1
             }
         }
 
-        static public List<string> GetFreeTimes(List<int> list)
-        { 
+        static List<string> GetFreeTimes(List<int> list)
+        {
             List<string> times = new List<string>();
 
             if (!list.Contains(1))
@@ -445,7 +440,7 @@ namespace Project1
                 times.Add("14:00");
             }
             if (!list.Contains(12))
-            { 
+            {
                 times.Add("14:30");
             }
             if (!list.Contains(13))
@@ -476,7 +471,7 @@ namespace Project1
             return times;
         }
 
-        static public int InsertBooking(string Name, string Category, int Slot, string email)
+        static public int InsertBooking(string Name, string Category, int Slot, string email, DateTime date)
         {
             int result = 0;
             using (SqlConnection db = new SqlConnection(Db))
@@ -497,6 +492,9 @@ namespace Project1
                     SqlParameter inputProcedure = InsertBookingCMD.Parameters.Add("@EProcedure", SqlDbType.NVarChar, 50);
                     inputProcedure.Direction = ParameterDirection.Input;
 
+                    SqlParameter InputDate = InsertBookingCMD.Parameters.Add("@EDate", SqlDbType.DateTime);
+                    InputDate.Direction = ParameterDirection.Input;
+
                     SqlParameter Result = InsertBookingCMD.Parameters.Add("Result", SqlDbType.Bit);
                     Result.Direction = ParameterDirection.ReturnValue;
 
@@ -504,6 +502,7 @@ namespace Project1
                     inputName.Value = Name;
                     inputSlot.Value = Slot;
                     inputProcedure.Value = Category;
+                    InputDate.Value = date;
 
                     db.Open();
 
@@ -512,6 +511,69 @@ namespace Project1
                     result = Convert.ToInt32(Result.Value);
 
                     return result;
+                }
+            }
+        }
+
+        public static int GetBookingSlots(string bookingTime)
+        {
+            if (bookingTime == "09:00") { return 1; }
+            if (bookingTime == "09:30") { return 2; }
+            if (bookingTime == "10:00") { return 3; }
+            if (bookingTime == "10:30") { return 4; }
+            if (bookingTime == "11:00") { return 5; }
+            if (bookingTime == "11:30") { return 6; }
+            if (bookingTime == "12:00") { return 7; }
+            if (bookingTime == "12:30") { return 8; }
+            if (bookingTime == "13:00") { return 9; }
+            if (bookingTime == "13:30") { return 10; }
+            if (bookingTime == "14:00") { return 11; }
+            if (bookingTime == "14:30") { return 12; }
+            if (bookingTime == "15:00") { return 13; }
+            if (bookingTime == "15:30") { return 14; }
+            if (bookingTime == "16:00") { return 15; }
+            if (bookingTime == "16:30") { return 16; }
+            if (bookingTime == "17:00") { return 17; }
+            if (bookingTime == "17:30") { return 18; }
+            else { return 0; }
+        }
+
+        public static List<Booking> EditBookings(string email)
+        {
+            List<Booking> bookings = new List<Booking>();
+            using (SqlConnection db = new SqlConnection(Db))
+            {
+                using (SqlCommand InsertBookingCMD = new SqlCommand("ReturnBooking", db))
+                {
+                    InsertBookingCMD.CommandType = CommandType.StoredProcedure;
+
+                    SqlParameter inputEmail = InsertBookingCMD.Parameters.Add("@EEmail", SqlDbType.NVarChar);
+                    inputEmail.Direction = ParameterDirection.Input;
+
+                    SqlParameter Result = InsertBookingCMD.Parameters.Add("Result", SqlDbType.Bit);
+                    Result.Direction = ParameterDirection.ReturnValue;
+
+                    inputEmail.Value = email;
+
+                    db.Open();
+
+                    SqlDataReader rdr = InsertBookingCMD.ExecuteReader();
+
+                    while (rdr.Read())
+                    {
+                        Booking booking = new Booking
+                        {
+                            Name = rdr["Name"].ToString(),
+                            Date = Convert.ToDateTime(rdr["Date"].ToString()),
+                            Email = rdr["Email"].ToString(),
+                            Slot = int.Parse(rdr["Slot"].ToString()),
+                            Procedure = rdr["Procedure"].ToString()
+                        };
+
+                        bookings.Add(booking);
+                    }
+
+                    return bookings;
                 }
             }
         }
@@ -569,7 +631,7 @@ namespace Project1
         {
             if (number.Length == 10)
             {
-                number = number.Remove(0,1);
+                number = number.Remove(0, 1);
             }
 
             // Your Account SID from twilio.com/console
@@ -664,5 +726,14 @@ namespace Project1
         public string UserMobileNumber { get; set; }
         public string UserEmail { get; set; }
         public string UserType { get; set; }
+    }
+
+    public class Booking
+    {
+        public string Email { get; set; }
+        public string Procedure { get; set; }
+        public int Slot { get; set; }
+        public string Name { get; set; }
+        public DateTime Date { get; set; }
     }
 }

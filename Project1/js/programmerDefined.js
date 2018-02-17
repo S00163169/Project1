@@ -25,8 +25,6 @@
         basketValue++;
     }
 
-    //function () {
-    //    window.location.href = "ConfirmationPage.cshtml";
 
     document.getElementById('updateBasket').addEventListener("click", UpdateCart, false);
     document.getElementById('checkoutBtn').addEventListener("click", CheckoutPage, false);
@@ -170,10 +168,6 @@ function PriceGetter() {
     sessionStorage.setItem("price", JSON.stringify(price));
 }
 
-//function GetTotalPrice() {
-//    $(".btn btn-success.btn-block")
-//}
-
 function CheckoutPage() { // Sends to the checkout page
     PriceGetter();
 
@@ -254,9 +248,17 @@ function BookAppointment(clicked_Name) {
     window.location.href = "pay.cshtml";
 }
 
-function GetTime(clicked_id)
-{
-    var timeSlot = document.getElementById(clicked_id).innerHTML;
+function GetTime(clicked_id) {
+    var timeSlot = document.getElementById(clicked_id).value;
+    $('#time').val(timeSlot);
+}
 
-    alert(timeSlot);
+function ClearTime() {
+    $('#time').val("");
+}
+
+function GetCategory() {
+    var category = sessionStorage.getItem("categoryName").toString();
+
+    $('div h3').append('<p>' + category + '</p>');
 }

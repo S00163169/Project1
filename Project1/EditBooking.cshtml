@@ -1,39 +1,6 @@
-﻿@using System.Data.SqlClient;
-@using System.Data
-@using Project1;
+﻿@using Project1;
 @{
-    var message = "";
-    int times = 1;
-    List<string> timeSlots = new List<string>();
-    var date = DateTime.Now;
-    var thisDate = Convert.ToString(DateTime.Now);
-    string category = "";
-    //if (Session["categoryName"] != null)
-    //{
-    category = (string)Session["categoryName"];
-    //}
-
-
-    if (IsPost)
-    {
-        thisDate = Request.Form["datepicker"];
-        string time = Request.Form["time"];
-        date = Convert.ToDateTime(thisDate);
-
-        var today = DateTime.Now;
-        var dateTaken = Convert.ToDateTime(Request.Form["datepicker"]);
-
-        if (dateTaken > today && time.Contains(":"))
-        {
-            int slot = DatabaseControl.GetBookingSlots(time);
-            DatabaseControl.InsertBooking("Owen", category, slot, "shamable@hotmail.com", Convert.ToDateTime(thisDate));
-            Response.Redirect("makeBookingPage.cshtml");
-        }
-        else
-        {
-            message = "Please enter a future date and choose and time slot.";
-        }
-    }
+    List<Booking> bookings = DatabaseControl.EditBookings("shamable@hotmail.com");
 }
 
 <!DOCTYPE html>
@@ -116,7 +83,7 @@
     <script src="js/respond.min.js"></script>
     <![endif]-->
 </head>
-<body onload="GetCategory()">
+<body>
     <header role="banner" id="fh5co-header">
         <div class="container">
             <!-- <div class="row"> -->
@@ -157,10 +124,10 @@
             <div class="row row-bottom-padded-md">
                 <form method="post">
                     <div class="col-md-6 to-animate col-md-offset-3">
-                        @message
+                        
                         <div class="form-group ">
                             <label for="datepicker" class="sr-only">Select Date</label>
-                            <input id="datepicker" class="form-control" placeholder="Date" type="date" value="@thisDate" name="datepicker" onchange="ClearTime()">
+                            <input id="datepicker" class="form-control" placeholder="Date" type="date" value="" name="datepicker" onchange="ClearTime()">
                         </div>
                         <div class="form-group ">
                             <label for="time" class="sr-only">Select Time</label>
@@ -171,10 +138,9 @@
                         </div>
                         <div class="form-group ">
                             <div id="timeSlots">
-                                @for (int i = 0; i < DatabaseControl.TimeSlots(Convert.ToDateTime(date)).Count; i++)
+                                @for (int i = 0; i < DatabaseControl.TimeSlots(Convert.ToDateTime(DateTime.Now)).Count; i++)
                                 {
-                                    <input id="slot_@times" class="btn btn-primary btn-lg" value="@DatabaseControl.TimeSlots(Convert.ToDateTime(date))[i]" type="button" onclick="GetTime(this.id)">
-                                    times++;
+                                    <input id="slot" class="btn btn-primary btn-lg" value="@DatabaseControl.TimeSlots(Convert.ToDateTime(DateTime.Now))[i]" type="button" onclick="GetTime(this.id)">
                                 }
                             </div>
                         </div>
@@ -229,16 +195,7 @@
     <script src="js/google_map.js"></script>
     <script src="js/programmerDefined.js"></script>
     <!-- Main JS (Do not remove) -->
-    @*<script>
-            $(function () {
-                function GetTime(clicked_id) {
-                    var timeSlot = document.getElementById(clicked_id).value;
-
-                    alert(timeSlot);
-                    document.getElementById("time").innerHTML = timeSlot;
-                }
-            });
-        </script>*@
     <script src="js/main.js"></script>
 </body>
 </html>
+

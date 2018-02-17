@@ -163,6 +163,7 @@
     <Content Include="ConfirmationPage.cshtml" />
     <Content Include="makeBookingPage.cshtml" />
     <Content Include="BookingConfirmed.cshtml" />
+    <Content Include="EditBooking.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
