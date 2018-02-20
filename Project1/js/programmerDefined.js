@@ -240,12 +240,13 @@ function ShowDetails() {
     $('#shippingAddress').after('<div><strong>' + details.Name + '</strong></div> <div><strong>' + details.Address1 + '</strong></div> <div><strong>' + details.Address2 + '</strong></div> <div><strong>Sligo</strong></div> <div><strong>' + postcd + '</strong></div> <div>Ireland</div>');
 }
 
-function BookAppointment(clicked_Name) {
+function BookAppointment(clicked_Name, e) {
     var CategoryName = clicked_Name;
 
     sessionStorage.setItem('categoryName', JSON.stringify(CategoryName));
 
     window.location.href = "pay.cshtml";
+    e.preventDefault();
 }
 
 function GetTime(clicked_id) {

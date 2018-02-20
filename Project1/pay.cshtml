@@ -8,11 +8,11 @@
     var date = DateTime.Now;
     var thisDate = Convert.ToString(DateTime.Now);
     string category = "";
-    //if (Session["categoryName"] != null)
-    //{
-    category = (string)Session["categoryName"];
-    //}
 
+    if (Session["categoryName"] != null)
+    {
+    category = (string)Session["categoryName"];
+    }
 
     if (IsPost)
     {
@@ -26,7 +26,7 @@
         if (dateTaken > today && time.Contains(":"))
         {
             int slot = DatabaseControl.GetBookingSlots(time);
-            DatabaseControl.InsertBooking("Owen", category, slot, "shamable@hotmail.com", Convert.ToDateTime(thisDate));
+            DatabaseControl.InsertBooking("Owen", "Baliage", slot, "shamable@hotmail.com", Convert.ToDateTime(thisDate));
             Response.Redirect("makeBookingPage.cshtml");
         }
         else

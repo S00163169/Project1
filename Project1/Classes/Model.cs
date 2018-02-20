@@ -17,6 +17,7 @@ using Twilio;
 using Twilio.Rest.Api.V2010.Account;
 using Twilio.Types;
 using System.Threading;
+using System.Diagnostics;
 
 namespace Project1
 {
@@ -506,7 +507,7 @@ namespace Project1
 
                     db.Open();
 
-                    SqlDataReader rdr = InsertBookingCMD.ExecuteReader();
+                    InsertBookingCMD.ExecuteNonQuery();
 
                     result = Convert.ToInt32(Result.Value);
 
@@ -538,7 +539,7 @@ namespace Project1
             else { return 0; }
         }
 
-        public static List<Booking> EditBookings(string email)
+        public static List<Booking> GetEditBookings(string email)
         {
             List<Booking> bookings = new List<Booking>();
             using (SqlConnection db = new SqlConnection(Db))
@@ -559,11 +560,13 @@ namespace Project1
 
                     SqlDataReader rdr = InsertBookingCMD.ExecuteReader();
 
+                    bookings = new List<Booking>();
+
                     while (rdr.Read())
                     {
                         Booking booking = new Booking
                         {
-                            Name = rdr["Name"].ToString(),
+                            Name = rdr["BookingName"].ToString(),
                             Date = Convert.ToDateTime(rdr["Date"].ToString()),
                             Email = rdr["Email"].ToString(),
                             Slot = int.Parse(rdr["Slot"].ToString()),
@@ -572,12 +575,12 @@ namespace Project1
 
                         bookings.Add(booking);
                     }
-
-                    return bookings;
                 }
+                return bookings;
             }
         }
     }
+
 
     public class Basket
     {
