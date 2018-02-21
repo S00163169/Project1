@@ -396,78 +396,24 @@ namespace Project1
         {
             List<string> times = new List<string>();
 
-            if (!list.Contains(1))
-            {
-                times.Add("09:00");
-            }
-            if (!list.Contains(2))
-            {
-                times.Add("09:30");
-            }
-            if (!list.Contains(3))
-            {
-                times.Add("10:00");
-            }
-            if (!list.Contains(4))
-            {
-                times.Add("10:30");
-            }
-            if (!list.Contains(5))
-            {
-                times.Add("11:00");
-            }
-            if (!list.Contains(6))
-            {
-                times.Add("11:30");
-            }
-            if (!list.Contains(7))
-            {
-                times.Add("12:00");
-            }
-            if (!list.Contains(8))
-            {
-                times.Add("12:30");
-            }
-            if (!list.Contains(9))
-            {
-                times.Add("13:00");
-            }
-            if (!list.Contains(10))
-            {
-                times.Add("13:30");
-            }
-            if (!list.Contains(11))
-            {
-                times.Add("14:00");
-            }
-            if (!list.Contains(12))
-            {
-                times.Add("14:30");
-            }
-            if (!list.Contains(13))
-            {
-                times.Add("15:00");
-            }
-            if (!list.Contains(14))
-            {
-                times.Add("15:30");
-            }
-            if (!list.Contains(15))
-            {
-                times.Add("16:00");
-            }
-            if (!list.Contains(16))
-            {
-                times.Add("16:30");
-            }
-            if (!list.Contains(17))
-            {
-                times.Add("17:00");
-            }
-            if (!list.Contains(18))
-            {
-                times.Add("17:30");
-            }
+            if (!list.Contains(1)) { times.Add("09:00"); }
+            if (!list.Contains(2)) { times.Add("09:30"); }
+            if (!list.Contains(3)) { times.Add("10:00"); }
+            if (!list.Contains(4)) { times.Add("10:30"); }
+            if (!list.Contains(5)) { times.Add("11:00"); }
+            if (!list.Contains(6)) { times.Add("11:30"); }
+            if (!list.Contains(7)) { times.Add("12:00"); }
+            if (!list.Contains(8)) { times.Add("12:30"); }
+            if (!list.Contains(9)) { times.Add("13:00"); }
+            if (!list.Contains(10)) { times.Add("13:30"); }
+            if (!list.Contains(11)) { times.Add("14:00"); }
+            if (!list.Contains(12)) { times.Add("14:30"); }
+            if (!list.Contains(13)) { times.Add("15:00"); }
+            if (!list.Contains(14)) { times.Add("15:30"); }
+            if (!list.Contains(15)) { times.Add("16:00"); }
+            if (!list.Contains(16)) { times.Add("16:30"); }
+            if (!list.Contains(17)) { times.Add("17:00"); }
+            if (!list.Contains(18)) { times.Add("17:30"); }
 
             return times;
         }
@@ -512,6 +458,30 @@ namespace Project1
                     result = Convert.ToInt32(Result.Value);
 
                     return result;
+                }
+            }
+        }
+
+        public static void EditBooking(string Id, int slot)
+        {
+            using (SqlConnection db = new SqlConnection(Db))
+            {
+                using (SqlCommand InsertBookingCMD = new SqlCommand("UpdateBooking", db))
+                {
+                    InsertBookingCMD.CommandType = CommandType.StoredProcedure;
+
+                    SqlParameter inputID = InsertBookingCMD.Parameters.Add("@EBookingID", SqlDbType.NVarChar);
+                    inputID.Direction = ParameterDirection.Input;
+
+                    SqlParameter inputSlot = InsertBookingCMD.Parameters.Add("@ESlot", SqlDbType.Int);
+                    inputSlot.Direction = ParameterDirection.Input;
+
+                    inputID.Value = Id;
+                    inputSlot.Value = slot;
+
+                    db.Open();
+
+                    InsertBookingCMD.ExecuteNonQuery(); 
                 }
             }
         }
@@ -566,11 +536,12 @@ namespace Project1
                     {
                         Booking booking = new Booking
                         {
+                            ID = rdr["ID"].ToString(),
                             Name = rdr["BookingName"].ToString(),
                             Date = Convert.ToDateTime(rdr["Date"].ToString()),
                             Email = rdr["Email"].ToString(),
                             Slot = int.Parse(rdr["Slot"].ToString()),
-                            Procedure = rdr["Procedure"].ToString()
+                            Procedure = rdr["Treatment"].ToString()
                         };
 
                         bookings.Add(booking);
@@ -582,35 +553,35 @@ namespace Project1
     }
 
 
-    public class Basket
-    {
-        #region Properties
-        static List<Product> basketProducts = new List<Product>();
-        #endregion
+    //public class Basket
+    //{
+    //    #region Properties
+    //    static List<Product> basketProducts = new List<Product>();
+    //    #endregion
 
-        static public List<Product> BasketProducts(Product[] products)
-        {
-            // Check if array isn't null
-            if (products != null)
-            {
-                // Go through products and get all their details from the database and add the products to a new list
-                for (int i = 0; i < products.Length; i++)
-                {
-                    Product prod = DatabaseControl.GetBasketProducts(Convert.ToInt32(products[i].ProductID));
-                    prod.Quantity = products[i].Quantity;
-                    basketProducts.Add(prod);
-                }
-                // Return the new list of products in the basket
-                return basketProducts;
-            }
-            else
-            {
-                // If the array is null return null
-                return null;
-            }
+    //    static public List<Product> BasketProducts(Product[] products)
+    //    {
+    //        // Check if array isn't null
+    //        if (products != null)
+    //        {
+    //            // Go through products and get all their details from the database and add the products to a new list
+    //            for (int i = 0; i < products.Length; i++)
+    //            {
+    //                Product prod = DatabaseControl.GetBasketProducts(Convert.ToInt32(products[i].ProductID));
+    //                prod.Quantity = products[i].Quantity;
+    //                basketProducts.Add(prod);
+    //            }
+    //            // Return the new list of products in the basket
+    //            return basketProducts;
+    //        }
+    //        else
+    //        {
+    //            // If the array is null return null
+    //            return null;
+    //        }
 
-        }
-    }
+    //    }
+    //}
 
     public class Checkout
     {
@@ -655,71 +626,71 @@ namespace Project1
         }
     }
 
-    class Calendar
-    {
-        // If modifying these scopes, delete your previously saved credentials
-        // at ~/.credentials/calendar-dotnet-quickstart.json
-        static string[] Scopes = { CalendarService.Scope.CalendarReadonly };
-        static string ApplicationName = "Google Calendar API .NET Quickstart";
+    //class Calendar
+    //{
+    //    // If modifying these scopes, delete your previously saved credentials
+    //    // at ~/.credentials/calendar-dotnet-quickstart.json
+    //    static string[] Scopes = { CalendarService.Scope.CalendarReadonly };
+    //    static string ApplicationName = "Google Calendar API .NET Quickstart";
 
-        static void Main(string[] args)
-        {
-            UserCredential credential;
+    //    static void Main(string[] args)
+    //    {
+    //        UserCredential credential;
 
-            using (var stream =
-                new FileStream("client_secret.json", FileMode.Open, FileAccess.Read))
-            {
-                string credPath = System.Environment.GetFolderPath(
-                    System.Environment.SpecialFolder.Personal);
-                credPath = Path.Combine(credPath, ".credentials/calendar-dotnet-quickstart.json");
+    //        using (var stream =
+    //            new FileStream("client_secret.json", FileMode.Open, FileAccess.Read))
+    //        {
+    //            string credPath = System.Environment.GetFolderPath(
+    //                System.Environment.SpecialFolder.Personal);
+    //            credPath = Path.Combine(credPath, ".credentials/calendar-dotnet-quickstart.json");
 
-                credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
-                    GoogleClientSecrets.Load(stream).Secrets,
-                    Scopes,
-                    "user",
-                    CancellationToken.None,
-                    new FileDataStore(credPath, true)).Result;
-                Console.WriteLine("Credential file saved to: " + credPath);
-            }
+    //            credential = GoogleWebAuthorizationBroker.AuthorizeAsync(
+    //                GoogleClientSecrets.Load(stream).Secrets,
+    //                Scopes,
+    //                "user",
+    //                CancellationToken.None,
+    //                new FileDataStore(credPath, true)).Result;
+    //            Console.WriteLine("Credential file saved to: " + credPath);
+    //        }
 
-            // Create Google Calendar API service.
-            var service = new CalendarService(new BaseClientService.Initializer()
-            {
-                HttpClientInitializer = credential,
-                ApplicationName = ApplicationName,
-            });
+    //        // Create Google Calendar API service.
+    //        var service = new CalendarService(new BaseClientService.Initializer()
+    //        {
+    //            HttpClientInitializer = credential,
+    //            ApplicationName = ApplicationName,
+    //        });
 
-            // Define parameters of request.
-            EventsResource.ListRequest request = service.Events.List("primary");
-            request.TimeMin = DateTime.Now;
-            request.ShowDeleted = false;
-            request.SingleEvents = true;
-            request.MaxResults = 10;
-            request.OrderBy = EventsResource.ListRequest.OrderByEnum.StartTime;
+    //        // Define parameters of request.
+    //        EventsResource.ListRequest request = service.Events.List("primary");
+    //        request.TimeMin = DateTime.Now;
+    //        request.ShowDeleted = false;
+    //        request.SingleEvents = true;
+    //        request.MaxResults = 10;
+    //        request.OrderBy = EventsResource.ListRequest.OrderByEnum.StartTime;
 
-            // List events.
-            Events events = request.Execute();
-            Console.WriteLine("Upcoming events:");
-            if (events.Items != null && events.Items.Count > 0)
-            {
-                foreach (var eventItem in events.Items)
-                {
-                    string when = eventItem.Start.DateTime.ToString();
-                    if (String.IsNullOrEmpty(when))
-                    {
-                        when = eventItem.Start.Date;
-                    }
-                    Console.WriteLine("{0} ({1})", eventItem.Summary, when);
-                }
-            }
-            else
-            {
-                Console.WriteLine("No upcoming events found.");
-            }
-            Console.Read();
+    //        // List events.
+    //        Events events = request.Execute();
+    //        Console.WriteLine("Upcoming events:");
+    //        if (events.Items != null && events.Items.Count > 0)
+    //        {
+    //            foreach (var eventItem in events.Items)
+    //            {
+    //                string when = eventItem.Start.DateTime.ToString();
+    //                if (String.IsNullOrEmpty(when))
+    //                {
+    //                    when = eventItem.Start.Date;
+    //                }
+    //                Console.WriteLine("{0} ({1})", eventItem.Summary, when);
+    //            }
+    //        }
+    //        else
+    //        {
+    //            Console.WriteLine("No upcoming events found.");
+    //        }
+    //        Console.Read();
 
-        }
-    }
+    //    }
+    //}
 
     public class User
     {
@@ -738,5 +709,6 @@ namespace Project1
         public int Slot { get; set; }
         public string Name { get; set; }
         public DateTime Date { get; set; }
+        public string ID { get; set; }
     }
 }

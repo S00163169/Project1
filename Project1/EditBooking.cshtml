@@ -1,6 +1,24 @@
 ﻿@using Project1;
 @{
     List<Booking> bookings = DatabaseControl.GetEditBookings("shamable@hotmail.com");
+    int times = 1;
+    int ids = 0;
+    var date = DateTime.Now;
+    string thisDate = "";
+    string bookingId = "";
+
+    if (IsPost)
+    {
+        string time = Request.Form["time"];
+        thisDate = Request.Form["datepicker"];
+        date = Convert.ToDateTime(thisDate);
+        bookingId = Request.Form["bookingId"];
+        if (time.Contains(":"))
+        {
+            int slot = DatabaseControl.GetBookingSlots(time);
+            DatabaseControl.EditBooking(bookingId, slot);
+        }
+    }
 }
 
 <!DOCTYPE html>
@@ -224,11 +242,12 @@
         </div>
     </header>
 
-    <section id="fh5co-work" data-section="work">
+
+    <section id="fh5co-work" data-section="work" style="background-image: url(images/purple.jpg);" data-stellar-background-ratio="0.5">
         <div class="container">
             <div class="row">
                 <div class="col-md-12 section-heading text-center">
-                    <h2 class="to-animate">Products</h2>
+                    <h2 class="to-animate">Bookings</h2>
                 </div>
             </div>
             <div class="row row-bottom-padded-sm">
@@ -242,14 +261,66 @@
                                 <span>@bg.Date.ToShortDateString() || Name: @bg.Name </span>
                             </div>
                             <div class="form-group text-center">
-                                <button class="btn btn-primary btn-sm" name="addToBasket" type="submit">Edit Booking</button>
+                                <button class="btn btn-primary btn-sm" id="btn_@ids" name="addToBasket" value="@bg.Date.ToShortDateString()" type="submit" onclick="DisplayEditBooking(this.id, '@bg.ID')">Edit Booking</button>
                             </div>
                         </div>
                     </div>
+                    ids++;
                 }
             </div>
         </div>
     </section>
+
+    <section id="fh5co-contact" data-section="contact" style="background-image: url(images/purple.jpg);" data-stellar-background-ratio="0.5">
+        <div class="gradient"></div>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12 section-heading text-center">
+                    <h2 class="to-animate">Edit Selected Booking</h2>
+                    <div class="row">
+                        <div class="col-md-8 col-md-offset-2 subtext to-animate">
+                            <h3>Select Time of your booking</h3>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row row-bottom-padded-md">
+                <form method="post">
+                    <div class="col-md-6 to-animate col-md-offset-3">
+                        <div class="form-group ">
+                            <label for="bookingId" class="sr-only">Booking Number</label>
+                            <input id="bookingId" class="form-control" placeholder="Booking Number" type="text" value="@bookingId" name="bookingId" readonly>
+                        </div>
+                        <div class="form-group ">
+                            <label for="datepicker" class="sr-only">Select Date</label>
+                            <input id="datepicker" class="form-control" placeholder="Date" type="text" value="@thisDate" name="datepicker" readonly>
+                        </div>
+                        <div class="form-group ">
+                            <label for="time" class="sr-only">Select Time</label>
+                            <input id="time" class="form-control" placeholder="Time" type="text" name="time" readonly>
+                        </div>
+                        <div class="form-group ">
+                            <div id="continueBtn"><input id="updateTime" class="btn btn-primary btn-lg" value="Update Time Slots" type="submit"></div>
+                        </div>
+                        <div class="form-group ">
+                            <div id="timeSlots">
+                                @for (int i = 0; i < DatabaseControl.TimeSlots(Convert.ToDateTime(date)).Count; i++)
+                                {
+                                    <input id="slot_@times" class="btn btn-primary btn-lg" value="@DatabaseControl.TimeSlots(Convert.ToDateTime(date))[i]" type="button" onclick="GetTime(this.id)">
+                                    times++;
+                                }
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <div id="continueBtn"><input class="btn btn-primary btn-lg" value="Continue" type="submit" onclick="SetVar()" /></div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="slant"></div>
+    </section>
+
 
     <footer id="footer" role="contentinfo">
         <a href="#" class="gotop js-gotop"><i class="icon-arrow-up2"></i></a>

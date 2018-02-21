@@ -246,7 +246,6 @@ function BookAppointment(clicked_Name, e) {
     sessionStorage.setItem('categoryName', JSON.stringify(CategoryName));
 
     window.location.href = "pay.cshtml";
-    e.preventDefault();
 }
 
 function GetTime(clicked_id) {
@@ -262,4 +261,10 @@ function GetCategory() {
     var category = sessionStorage.getItem("categoryName").toString();
 
     $('div h3').append('<p>' + category + '</p>');
+}
+
+function DisplayEditBooking(clicked_id, id) {
+    var timeSlot = document.getElementById(clicked_id).value;
+    $('#datepicker').val(timeSlot);
+    $('#bookingId').val(id);
 }
