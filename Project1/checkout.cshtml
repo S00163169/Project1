@@ -75,7 +75,29 @@
 
 
     <style>
-        /* For demo purpose only */
+        /* For Stripe Payment */
+        .StripeElement {
+            background-color: white;
+            height: 40px;
+            padding: 10px 12px;
+            border-radius: 4px;
+            border: 1px solid transparent;
+            box-shadow: 0 1px 3px 0 #e6ebf1;
+            -webkit-transition: box-shadow 150ms ease;
+            transition: box-shadow 150ms ease;
+        }
+
+        .StripeElement--focus {
+            box-shadow: 0 1px 3px 0 #cfd7df;
+        }
+
+        .StripeElement--invalid {
+            border-color: #fa755a;
+        }
+
+        .StripeElement--webkit-autofill {
+            background-color: #fefde5 !important;
+        }
 
         /* For Demo Purposes Only ( You can delete this anytime :-) */
         #colour-variations {
@@ -188,12 +210,19 @@
                 outline: none;
             }
 
-            #myDiv{
-                margin-top:3.3em;
-                position:absolute;
-                width:70px;
-                /*bottom:0;*/
-            }
+        #myDiv {
+            margin-top: 3.3em;
+            position: absolute;
+            width: 70px;
+            /*bottom:0;*/
+        }
+
+        #payyee {
+            width: 50%;
+            margin: 0 auto;
+            padding-bottom: 2em;
+            padding-top:1em;
+        }
     </style>
     <!-- End demo purposes only -->
     <!-- Modernizr JS -->
@@ -204,7 +233,7 @@
     <![endif]-->
 
 </head>
-<body>
+<body onload="Payment()" style="background-image: url(images/purple.jpg);">
     <header role="banner" id="fh5co-header">
         <div class="container">
             <!-- <div class="row"> -->
@@ -214,7 +243,7 @@
                     <a href="#" class="js-fh5co-nav-toggle fh5co-nav-toggle" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar"><i></i></a>
                     <a class="navbar-brand" href="index.html">Welcome  !</a>
                 </div>
-                <div id="navbar" class="navbar-collapse collapse">
+                @*<div id="navbar" class="navbar-collapse collapse">
                     <ul class="nav navbar-nav navbar-right">
                         <li class="active"><a href="#" data-nav-section="home"><span>Home</span></a></li>
                         <li><a href="~/shop.cshtml" data-nav-section="work"><span>Shop</span></a></li>
@@ -223,7 +252,7 @@
                         <li><a href="#" data-nav-section="about"><span>About</span></a></li>
                         <li><a href="#" data-nav-section="contact"><span>Contact</span></a></li>
                     </ul>
-                </div>
+                </div>*@
             </nav>
             <!-- </div> -->
         </div>
@@ -242,148 +271,98 @@
                 </div>
             </div>*@
         <div class="row row-bottom-padded-md">
-            @*<div class="col-md-6 to-animate">
-                    <h3>Contact Info</h3>
-                    <ul class="fh5co-contact-info">
-                        <li class="fh5co-contact-address ">
-                            <i class="icon-home"></i>
-                            5555 Love Paradise 56 New Clity 5655, <br>Excel Tower United Kingdom
-                        </li>
-                        <li><i class="icon-phone"></i> (123) 465-6789</li>
-                        <li><i class="icon-envelope"></i>info@freehtml5.co</li>
-                        <li><i class="icon-globe"></i> <a href="http://freehtml5.co/" target="_blank">freehtml5.co</a></li>
-                    </ul>
-                </div>*@
 
-            <form style="margin-left:4em; margin-right:4em;">
-                <div class="col-md-6 to-animate">
-                    <h3>Shipping Address</h3>
-                    <div class="form-group ">
-                        <label for="name" class="sr-only">Full Name</label>
-                        <input id="name" name="name" class="form-control" placeholder="John Doe" type="text" required>
-                    </div>
-                    <div class="form-group ">
-                        <label for="email" class="sr-only">Email</label>
-                        <input id="email" name="email" class="form-control" placeholder="Example@hotmail.com" type="email" required>
-                    </div>
-                    <div class="form-group ">
-                        <label for="Address1" class="sr-only">Address Line 1</label>
-                        <input id="Address1" name="address1" class="form-control" placeholder="1 Mulberry Park" type="text" required>
-                    </div>
-                    <div class="form-group ">
-                        <label for="Address2" class="sr-only">Address Line 2</label>
-                        <input id="Address2" name="address2" class="form-control" placeholder="Ballinode" type="text">
-                    </div>
-                    <div class="form-group ">
-                        <label for="county" class="sr-only">County</label>
-                        <input id="county" name="county" class="form-control" value="Sligo" type="text" readonly>
-                    </div>
-                    <div class="form-group ">
-                        <label for="PostCode" class="sr-only">Post Code</label>
-                        <input id="PostCode" name="postcode" class="form-control" placeholder="F91 P6CV" type="text" >
-                    </div>
-                    <div class="form-group ">
-                        <label for="phone" class="sr-only">Phone</label>
-                        <input id="phone" name="phone" class="form-control" placeholder="Phone" type="text" required>
-                    </div>
-                </div>
-
-                <div class="col-md-6 to-animate">
+            <form style="margin-left:4em; margin-right:4em;" method="post" id="payment-method">
+                <div id="payyee">
                     <h3>Payment Details</h3>
                     <div class="form-group ">
                         <label for="fullname" class="sr-only">Full Name</label>
                         <input id="fullname" name="fullname" class="form-control" placeholder="John Doe" type="text">
                     </div>
                     <div class="form-group ">
-                        <label for="cardNumber" class="sr-only">Card Number</label>
-                        <input id="cardNumber" name="cardNumber" class="form-control" placeholder="Card Number" type="text">
-                    </div>
-                    <div class="form-group ">
-                        <div class="col-xs-3">
-                            <label for="exMonth" class="sr-only" style="margin:1em;">Expiry Month</label>
-                            <input id="exMonth" name="exMonth" class="form-control" placeholder="MM" type="text">
+                        <div class="form-row">
+                            <label for="card-element">
+                                Credit or debit card
+                            </label>
+                            <div id="card-element">
+                                <!-- A Stripe Element will be inserted here. -->
+                            </div>
+
+                            <!-- Used to display form errors. -->
+                            <div id="card-errors" role="alert"></div>
                         </div>
                     </div>
-                    <div class="form-group ">
-                        <div class="col-xs-3">
-                            <label for="exYear" class="sr-only">Expiry Year</label>
-                            <input id="exYear" name="exYear" class="form-control" placeholder="YY" type="text">
-                        </div>
-                    </div> 
 
                     <div id="myDiv">
                         <div class="form-group ">
-                            <input class="btn btn-primary btn-lg" id="payBtn" value="Proceed To Payment" readonly>
+                            <input class="btn btn-primary btn-lg" id="payBtn" value="Payment" type="submit" readonly>
                         </div>
                     </div>
                 </div>
             </form>
         </div>
-
-        @*</div>
-        </div>*@
         @*<div id="map" class="to-animate"></div>*@
     </section>
 
 
-    <footer id="footer" role="contentinfo">
-        <a href="#" class="gotop js-gotop"><i class="icon-arrow-up2"></i></a>
-        <div class="container">
-            <div class="">
-                <div class="col-md-12 text-center">
-                    <p>&copy; Elate Free HTML5. All Rights Reserved. <br>Created by <a href="http://freehtml5.co/" target="_blank">FREEHTML5.co</a> Images: <a href="http://pexels.com/" target="_blank">Pexels</a>, <a href="http://plmd.me/" target="_blank">plmd.me</a></p>
+    @*<footer id="footer" role="contentinfo">
+            <a href="#" class="gotop js-gotop"><i class="icon-arrow-up2"></i></a>
+            <div class="container">
+                <div class="">
+                    <div class="col-md-12 text-center">
+                        <p>&copy; Elate Free HTML5. All Rights Reserved. <br>Created by <a href="http://freehtml5.co/" target="_blank">FREEHTML5.co</a> Images: <a href="http://pexels.com/" target="_blank">Pexels</a>, <a href="http://plmd.me/" target="_blank">plmd.me</a></p>
 
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-12 text-center">
+                        <ul class="social social-circle">
+                            <li><a href="#"><i class="icon-twitter"></i></a></li>
+                            <li><a href="#"><i class="icon-facebook"></i></a></li>
+                            <li><a href="#"><i class="icon-youtube"></i></a></li>
+                        </ul>
+                    </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="col-md-12 text-center">
-                    <ul class="social social-circle">
-                        <li><a href="#"><i class="icon-twitter"></i></a></li>
-                        <li><a href="#"><i class="icon-facebook"></i></a></li>
-                        <li><a href="#"><i class="icon-youtube"></i></a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-    </footer>
+        </footer>*@
 
 
     <!-- For demo purposes Only ( You may delete this anytime :-) -->
     @*<div id="colour-variations">
-        <a class="option-toggle"><i class="icon-gear"></i></a>
-        <h3>Preset Colors</h3>
-        <ul>
-            <li>
-                <a href="javascript: void(0);" data-theme="style">
-                    <span style="background: #3f95ea;"></span>
-                    <span style="background: #52d3aa;"></span>
-                    <span style="background: #f2f2f2;"></span>
-                </a>
-            </li>
-            <li>
-                <a href="javascript: void(0);" data-theme="style2">
-                    <span style="background: #329998;"></span>
-                    <span style="background: #6cc99c;"></span>
-                    <span style="background: #f2f2f2;"></span>
-                </a>
-            </li>
-            <li>
-                <a href="javascript: void(0);" data-theme="style3">
-                    <span style="background: #9f466e;"></span>
-                    <span style="background: #c24d67;"></span>
-                    <span style="background: #f2f2f2;"></span>
-                </a>
-            </li>
-            <li>
-                <a href="javascript: void(0);" data-theme="style4">
-                    <span style="background: #21825C;"></span>
-                    <span style="background: #A4D792;"></span>
-                    <span style="background: #f2f2f2;"></span>
-                </a>
-            </li>
+            <a class="option-toggle"><i class="icon-gear"></i></a>
+            <h3>Preset Colors</h3>
+            <ul>
+                <li>
+                    <a href="javascript: void(0);" data-theme="style">
+                        <span style="background: #3f95ea;"></span>
+                        <span style="background: #52d3aa;"></span>
+                        <span style="background: #f2f2f2;"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript: void(0);" data-theme="style2">
+                        <span style="background: #329998;"></span>
+                        <span style="background: #6cc99c;"></span>
+                        <span style="background: #f2f2f2;"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript: void(0);" data-theme="style3">
+                        <span style="background: #9f466e;"></span>
+                        <span style="background: #c24d67;"></span>
+                        <span style="background: #f2f2f2;"></span>
+                    </a>
+                </li>
+                <li>
+                    <a href="javascript: void(0);" data-theme="style4">
+                        <span style="background: #21825C;"></span>
+                        <span style="background: #A4D792;"></span>
+                        <span style="background: #f2f2f2;"></span>
+                    </a>
+                </li>
 
-        </ul>
-    </div>*@
+            </ul>
+        </div>*@
     <!-- End demo purposes only -->
     <!-- jQuery -->
     <script src="js/jquery.min.js"></script>
@@ -400,6 +379,7 @@
     <!-- Magnific Popup -->
     <script src="js/jquery.magnific-popup.min.js"></script>
     <script src="js/magnific-popup-options.js"></script>
+    <!-- Programming defined code -->
     <script src="js/programmerDefined.js"></script>
     <!-- Google Map -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCefOgb1ZWqYtj7raVSmN4PL2WkTrc-KyA&sensor=false"></script>
@@ -409,6 +389,8 @@
 
     <!-- For demo purposes only styleswitcher ( You may delete this anytime ) -->
     <script src="js/jquery.style.switcher.js"></script>
+    <!-- For Stripe -->
+    <script src="https://js.stripe.com/v3/"></script>
     <script>
         $(function () {
             $('#colour-variations ul').styleSwitcher({
@@ -423,8 +405,7 @@
                 $('#colour-variations').toggleClass('sleep');
             });
 
-            document.getElementById('payBtn').addEventListener("click", ConfirmationPage , false);
-        });
+            document.getElementById('payBtn').addEventListener("click", ConfirmationPage, false);
     </script>
     <!-- End demo purposes only -->
     <!-- Main JS (Do not remove) -->
