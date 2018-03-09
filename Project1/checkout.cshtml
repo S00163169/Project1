@@ -1,4 +1,16 @@
-﻿<!DOCTYPE html>
+﻿@using Project1;
+@{ 
+    if (IsPost)
+    {
+        int price = int.Parse(Request.Form["price"] + "00");
+
+        if (price != 0)
+        {
+            DatabaseControl.PaymentMethod(price);
+        }
+    }
+}
+<!DOCTYPE html>
 <!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
 <!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
 <!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
@@ -211,9 +223,10 @@
             }
 
         #myDiv {
-            margin-top: 3.3em;
+            margin-top: 1em;
             position: absolute;
             width: 70px;
+            text-align:center;
             /*bottom:0;*/
         }
 
@@ -276,8 +289,13 @@
                 <div id="payyee">
                     <h3>Payment Details</h3>
                     <div class="form-group ">
+                        Your Card will be charged 
+                        <label for="price" class="sr-only">Full Name</label>
+                        <input id="price" name="price" class="form-control" placeholder="" type="text" readonly>
+                    </div>
+                    <div class="form-group ">
                         <label for="fullname" class="sr-only">Full Name</label>
-                        <input id="fullname" name="fullname" class="form-control" placeholder="John Doe" type="text">
+                        <input id="fullname" name="fullname" class="form-control" placeholder="Enter Card Name" type="text">
                     </div>
                     <div class="form-group ">
                         <div class="form-row">
@@ -326,44 +344,6 @@
             </div>
         </footer>*@
 
-
-    <!-- For demo purposes Only ( You may delete this anytime :-) -->
-    @*<div id="colour-variations">
-            <a class="option-toggle"><i class="icon-gear"></i></a>
-            <h3>Preset Colors</h3>
-            <ul>
-                <li>
-                    <a href="javascript: void(0);" data-theme="style">
-                        <span style="background: #3f95ea;"></span>
-                        <span style="background: #52d3aa;"></span>
-                        <span style="background: #f2f2f2;"></span>
-                    </a>
-                </li>
-                <li>
-                    <a href="javascript: void(0);" data-theme="style2">
-                        <span style="background: #329998;"></span>
-                        <span style="background: #6cc99c;"></span>
-                        <span style="background: #f2f2f2;"></span>
-                    </a>
-                </li>
-                <li>
-                    <a href="javascript: void(0);" data-theme="style3">
-                        <span style="background: #9f466e;"></span>
-                        <span style="background: #c24d67;"></span>
-                        <span style="background: #f2f2f2;"></span>
-                    </a>
-                </li>
-                <li>
-                    <a href="javascript: void(0);" data-theme="style4">
-                        <span style="background: #21825C;"></span>
-                        <span style="background: #A4D792;"></span>
-                        <span style="background: #f2f2f2;"></span>
-                    </a>
-                </li>
-
-            </ul>
-        </div>*@
-    <!-- End demo purposes only -->
     <!-- jQuery -->
     <script src="js/jquery.min.js"></script>
     <!-- jQuery Easing -->

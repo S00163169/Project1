@@ -133,9 +133,15 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="css\card-js.min.css" />
+    <Content Include="css\fotorama.css" />
     <Content Include="css\styleForLogin.css" />
+    <Content Include="images\input_images\beyonce.jpg" />
+    <Content Include="images\input_images\justinTimberlake.jpg" />
+    <Content Include="images\input_images\kevinHart.jpg" />
+    <Content Include="images\input_images\zendaya.jpg" />
     <Content Include="images\purple.jpg" />
     <Content Include="js\card-js.min.js" />
+    <Content Include="js\fotorama.js" />
     <Content Include="js\programmerDefined.js" />
     <Content Include="packages.config" />
     <Content Include="css\.DS_Store" />
@@ -169,6 +175,7 @@
     <Content Include="makeBookingPage.cshtml" />
     <Content Include="BookingConfirmed.cshtml" />
     <Content Include="EditBooking.cshtml" />
+    <Content Include="timeChoose.cshtml" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -237,7 +244,6 @@
     <Folder Include="fonts\bootstrap\" />
     <Folder Include="fonts\icomoon\" />
     <Folder Include="fonts\simple-line-icons\" />
-    <Folder Include="images\input_images\" />
     <Folder Include="sass\bootstrap\" />
   </ItemGroup>
   <PropertyGroup>

@@ -81,6 +81,7 @@ namespace Project1
     {
         public string Name { get; set; }
         public string ID { get; set; }
+        public int Length { get; set; }
 
         public Category()
         {
@@ -150,14 +151,12 @@ namespace Project1
                     {
                         Product product = new Product
                         {
-                            ProductID = myReader["ProductID"].ToString(),
+                            ProductID = myReader["ID"].ToString(),
                             Name = myReader["ProductName"].ToString(),
-                            Description = myReader["ProductDesc"].ToString(),
-                            Price = decimal.Parse(myReader["ProductPrice"].ToString()),
-                            //product.ProductStock = int.Parse(myReader["ProductStock"].ToString());
-                            ImageUrl = myReader["ProductURL"].ToString()
+                            Price = decimal.Parse(myReader["Price"].ToString()),
+                            Quantity = int.Parse(myReader["Quantity"].ToString()),
+                            ImageUrl = myReader["imageUrl"].ToString()
                         };
-                        //product.ProductCategoryID = int.Parse(myReader["ProductCategoryID"].ToString());
 
                         products.Add(product);
                     }
@@ -170,48 +169,48 @@ namespace Project1
             }
         }
 
-        static public Product GetBasketProducts(int productID)
-        {
-            Product product = new Product();
+        //static public Product GetBasketProducts(int productID)
+        //{
+        //    Product product = new Product();
 
-            using (SqlConnection boothtest = new SqlConnection("Server=tcp:boothserver.database.windows.net,1433;" +
-                "Initial Catalog=boothtest;Persist Security Info=False;" +
-                "User ID=S00163774;Password=BOOTHserver%163774;" +
-                "MultipleActiveResultSets=False;Encrypt=True;" +
-                "TrustServerCertificate=False;Connection Timeout=30;"))
-            {
+        //    using (SqlConnection boothtest = new SqlConnection("Server=tcp:boothserver.database.windows.net,1433;" +
+        //        "Initial Catalog=boothtest;Persist Security Info=False;" +
+        //        "User ID=S00163774;Password=BOOTHserver%163774;" +
+        //        "MultipleActiveResultSets=False;Encrypt=True;" +
+        //        "TrustServerCertificate=False;Connection Timeout=30;"))
+        //    {
 
-                using (SqlCommand BasketProds = new SqlCommand("BasketItem", boothtest))
-                {
-                    BasketProds.CommandType = CommandType.StoredProcedure;
+        //        using (SqlCommand BasketProds = new SqlCommand("BasketItem", boothtest))
+        //        {
+        //            BasketProds.CommandType = CommandType.StoredProcedure;
 
-                    SqlParameter inputEmail = BasketProds.Parameters.Add("@ProductID", SqlDbType.Int);
-                    inputEmail.Direction = ParameterDirection.Input;
+        //            SqlParameter inputEmail = BasketProds.Parameters.Add("@ProductID", SqlDbType.Int);
+        //            inputEmail.Direction = ParameterDirection.Input;
 
-                    inputEmail.Value = productID;
+        //            inputEmail.Value = productID;
 
-                    boothtest.Open();
+        //            boothtest.Open();
 
-                    SqlDataReader myReader = BasketProds.ExecuteReader();
+        //            SqlDataReader myReader = BasketProds.ExecuteReader();
 
-                    product = new Product();
+        //            product = new Product();
 
-                    while (myReader.Read())
-                    {
-                        product.ProductID = myReader["ProductID"].ToString();
-                        product.Name = myReader["ProductName"].ToString();
-                        product.Description = myReader["ProductDesc"].ToString();
-                        product.Price = decimal.Parse(myReader["ProductPrice"].ToString());
-                        product.ImageUrl = myReader["ProductURL"].ToString();
-                    }
+        //            while (myReader.Read())
+        //            {
+        //                product.ProductID = int.Parse(myReader["ProductID"].ToString());
+        //                product.Name = myReader["ProductName"].ToString();
+        //                product.Description = myReader["ProductDesc"].ToString();
+        //                product.Price = decimal.Parse(myReader["ProductPrice"].ToString());
+        //                product.ImageUrl = myReader["ProductURL"].ToString();
+        //            }
 
-                    myReader.Close();
-                    boothtest.Close();
+        //            myReader.Close();
+        //            boothtest.Close();
 
-                    return product;
-                }
-            }
-        }
+        //            return product;
+        //        }
+        //    }
+        //}
 
         static public User LogIn(string email, string password)
         {
@@ -225,7 +224,7 @@ namespace Project1
             {
                 using (SqlCommand LogInCMD = new SqlCommand("LogIn", boothtest)) // Create New Command calling 'LogIn' stored procedure in boothtest database
                 {
-                    LogInCMD.CommandType = CommandType.StoredProcedure;
+                    LogInCMD.CommandType = CommandType.StoredProcedure; // Let's Database know that it's a Stored Procedure 
 
                     // Input Variables
                     SqlParameter inputEmail = LogInCMD.Parameters.Add("@ExUserEmail", SqlDbType.NVarChar, 30);
@@ -340,6 +339,7 @@ namespace Project1
                         {
                             ID = myReader["ID"].ToString(),
                             Name = myReader["CategoryName"].ToString(),
+                            Length = int.Parse(myReader["Length"].ToString())
                         };
 
                         categories.Add(category);
@@ -419,7 +419,7 @@ namespace Project1
             return times;
         }
 
-        static public int InsertBooking(string Name, string Category, int Slot, string email, DateTime date)
+        static public int InsertBooking(string Name, string Category, int Slot, string email, DateTime date, string stylist)
         {
             int result = 0;
             using (SqlConnection db = new SqlConnection(Db))
@@ -440,6 +440,9 @@ namespace Project1
                     SqlParameter inputProcedure = InsertBookingCMD.Parameters.Add("@EProcedure", SqlDbType.NVarChar, 50);
                     inputProcedure.Direction = ParameterDirection.Input;
 
+                    SqlParameter inputStylist = InsertBookingCMD.Parameters.Add("@EStylist", SqlDbType.NVarChar, 50);
+                    inputStylist.Direction = ParameterDirection.Input;
+
                     SqlParameter InputDate = InsertBookingCMD.Parameters.Add("@EDate", SqlDbType.DateTime);
                     InputDate.Direction = ParameterDirection.Input;
 
@@ -450,6 +453,7 @@ namespace Project1
                     inputName.Value = Name;
                     inputSlot.Value = Slot;
                     inputProcedure.Value = Category;
+                    inputStylist.Value = stylist;
                     InputDate.Value = date;
 
                     db.Open();
@@ -618,6 +622,111 @@ namespace Project1
                 }
             }
         }
+
+        public static void PaymentMethod(int amount)
+        {
+            // var amount = 100;
+            //var payment = Stripe.StripeCharge.(amount);
+            try
+            {
+                //use nu-get Stripe
+                //set TLS 1.2 in androuid settings
+
+                StripeConfiguration.SetApiKey("sk_test_BEPrGyKARA5fbK1rcLbAixdd");
+
+                var chargeOptions = new StripeChargeCreateOptions()
+                {
+                    Amount = amount,
+                    Currency = "eur",
+                    SourceTokenOrExistingSourceId = "tok_visa",
+                    Metadata = new Dictionary<String, String>()
+                    {
+                        { "OrderId", "6735" }
+                    }
+                };
+
+                var chargeService = new StripeChargeService();
+                StripeCharge charge = chargeService.Create(chargeOptions);
+            }
+            // Use Stripe's library to make request
+
+            catch (StripeException ex)
+            {
+                switch (ex.StripeError.ErrorType)
+                {
+                    case "card_error":
+                        System.Diagnostics.Debug.WriteLine("   Code: " + ex.StripeError.Code);
+                        System.Diagnostics.Debug.WriteLine("Message: " + ex.StripeError.Message);
+                        break;
+                    case "api_connection_error":
+                        System.Diagnostics.Debug.WriteLine(" apic  Code: " + ex.StripeError.Code);
+                        System.Diagnostics.Debug.WriteLine("apic Message: " + ex.StripeError.Message);
+                        break;
+                    case "api_error":
+                        System.Diagnostics.Debug.WriteLine("api   Code: " + ex.StripeError.Code);
+                        System.Diagnostics.Debug.WriteLine("api Message: " + ex.StripeError.Message);
+                        break;
+                    case "authentication_error":
+                        System.Diagnostics.Debug.WriteLine(" auth  Code: " + ex.StripeError.Code);
+                        System.Diagnostics.Debug.WriteLine("auth Message: " + ex.StripeError.Message);
+                        break;
+                    case "invalid_request_error":
+                        System.Diagnostics.Debug.WriteLine(" invreq  Code: " + ex.StripeError.Code);
+                        System.Diagnostics.Debug.WriteLine("invreq Message: " + ex.StripeError.Message);
+                        break;
+                    case "rate_limit_error":
+                        System.Diagnostics.Debug.WriteLine("  rl Code: " + ex.StripeError.Code);
+                        System.Diagnostics.Debug.WriteLine("rl Message: " + ex.StripeError.Message);
+                        break;
+                    case "validation_error":
+                        System.Diagnostics.Debug.WriteLine(" val  Code: " + ex.StripeError.Code);
+                        System.Diagnostics.Debug.WriteLine("val Message: " + ex.StripeError.Message);
+                        break;
+                    default:
+                        // Unknown Error Type
+                        break;
+                }
+            }
+        }
+
+        public static List<User> GetStylists()
+        {
+            List<User> user = new List<User>();
+
+            string db = ConfigurationManager.ConnectionStrings["Connection"].ConnectionString;
+
+            using (SqlConnection boothtest = new SqlConnection(db))
+            {
+                using (SqlCommand ProductsCMD = new SqlCommand("GetStylists", boothtest))
+                {
+                    ProductsCMD.CommandType = CommandType.StoredProcedure;
+
+                    boothtest.Open();
+
+                    SqlDataReader myReader = ProductsCMD.ExecuteReader();
+
+                    user = new List<User>();
+
+                    while (myReader.Read())
+                    {
+                       User product = new User
+                        {
+                            StylistID = myReader["id"].ToString(),
+                            UserFirstName = myReader["StylistName"].ToString(),
+                            StylistImage = myReader["imageUrl"].ToString()
+                        };
+                        //product.ProductCategoryID = int.Parse(myReader["ProductCategoryID"].ToString());
+
+                        user.Add(product);
+                    }
+
+                    myReader.Close();
+                    boothtest.Close();
+
+                    return user;
+                }
+            }
+        }
     }
 
 
@@ -686,11 +795,8 @@ namespace Project1
             var message = MessageResource.Create(
                 to: new PhoneNumber("+353" + number),
                 from: new PhoneNumber("+353861802018"),
-                body: "Mo n fi message se testing fun project 300 mi. L'agbara Olorun o ma sise.");
+                body: "This email was sent to confirm your booking at Do or Dye Hair Salon.");
 
-            Console.WriteLine(message.Sid);
-            Console.Write("Press any key to continue.");
-            Console.ReadKey();
         }
     }
 
@@ -768,6 +874,8 @@ namespace Project1
         public string UserMobileNumber { get; set; }
         public string UserEmail { get; set; }
         public string UserType { get; set; }
+        public string StylistID { get; set; }
+        public string StylistImage { get; set; }
     }
 
     public class Booking

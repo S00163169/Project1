@@ -253,7 +253,7 @@
                     <h2 class="to-animate">Products</h2>
                 </div>
             </div>
-            <div class="row row-bottom-padded-sm">
+            <div class="row row-bottom-padded-sm"> 
                 @foreach (Category category in categories)
                 {
                     <div class="col-md-4 col-sm-6 col-xxs-12">
@@ -263,7 +263,7 @@
                                 <h2>@category.Name</h2>
                             </div>
                             <div class="form-group text-center">
-                                <button class="btn btn-primary btn-sm" name="addToBasket" type="submit" onclick="BookAppointment('@category.Name')">Make Booking</button>
+                                <button class="btn btn-primary btn-sm" name="addToBasket" type="submit" onclick="SetBooking('@category.Name')">Make Booking</button>
                             </div>@**@
                         </div>
                     </div>

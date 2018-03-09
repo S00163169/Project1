@@ -69,7 +69,7 @@ function AddToBasket(clicked_id, productID, productPrice, productName, Image, De
     var pos = clicked_id.charAt(clicked_id.length - 1);
     var quantity = $('span.badge')[pos].innerText;
     // place the product and quantity into session storage
-    if (quantity != null) {
+    if (quantity !== null) {
 
         var basketItem = [productID, quantity, productName, productPrice, Image, Description];
         var prod = new Product(basketItem);
@@ -123,7 +123,7 @@ function CartDisplay() {
     for (var i = 0; i < realKeys.length; i++) {
         var prod = sessionStorage.getItem(realKeys[i]);
         prod = JSON.parse(prod);
-        $("div.panel-body").append('<div class="row"><div class="col-xs-2"><img class="img-responsive" src="http://placehold.it/100x70"></div><div class="col-xs-4"><h4 class="product-name"><strong>' + prod.Name + '</strong></h4><h4><small>' + prod.Description + '</small></h4></div><div class="col-xs-6"><div class="col-xs-6 text-right"><h6><strong><div class="pricedProds">' + prod.Price + '</div><span class="text-muted"> x</span></strong></h6></div><div class="col-xs-4"><input type="text" name="basketProds" class="form-control input-sm" value="' + prod.Quantity + '"></div><div class="col-xs-2"><button type="button" class="btn btn-link btn-xs" onclick="RemoveItem(' + prod.ID + ')"><span class="glyphicon glyphicon-trash"> </span></button></div></div></div>');
+        $("div.panel-body").append('<div class="row"><div class="col-xs-2"><img class="img-responsive" src="' + prod.Image + '" style="width:100px; height:70px;"></div><div class="col-xs-4"><h4 class="product-name"><strong>' + prod.Name + '</strong></h4><h4><small>' + prod.Description + '</small></h4></div><div class="col-xs-6"><div class="col-xs-6 text-right"><h6><strong><div class="pricedProds">' + prod.Price + '</div><span class="text-muted"> x</span></strong></h6></div><div class="col-xs-4"><input type="text" name="basketProds" class="form-control input-sm" value="' + prod.Quantity + '"></div><div class="col-xs-2"><button type="button" class="btn btn-link btn-xs" onclick="RemoveItem(' + prod.ID + ')"><span class="glyphicon glyphicon-trash"> </span></button></div></div></div>');
         var price = prod.Price * prod.Quantity;
         totalPrice += price;
         // Increment counter for each productID in the Basket
@@ -197,7 +197,7 @@ function ShippingDetails() {
 
     var details;
 
-    if ($('#Address2').val() != null) {
+    if ($('#Address2').val() !== null) {
         var address2 = $('#Address2').val();
         details = [name, email, address1, address2, postCode];
     }
@@ -240,11 +240,16 @@ function ShowDetails() {
     $('#shippingAddress').after('<div><strong>' + details.Name + '</strong></div> <div><strong>' + details.Address1 + '</strong></div> <div><strong>' + details.Address2 + '</strong></div> <div><strong>Sligo</strong></div> <div><strong>' + postcd + '</strong></div> <div>Ireland</div>');
 }
 
-function BookAppointment(clicked_Name, e) {
-    var CategoryName = clicked_Name;
+function Category(temp) {
+    this.Name = temp[0];
+    this.Length = temp[1];
+    this.ID = temp[2];
+}
 
-    sessionStorage.setItem('categoryName', JSON.stringify(CategoryName));
+function SetBooking(name) {
 
+    sessionStorage.setItem("name", JSON.stringify(name));
+    
     window.location.href = "pay.cshtml";
 }
 
@@ -258,9 +263,15 @@ function ClearTime() {
 }
 
 function GetCategory() {
-    var category = sessionStorage.getItem("categoryName").toString();
+    var category = sessionStorage.getItem("name");
 
-    $('div h3').append('<p>' + category + '</p>');
+    $('div h3').append('<p><strong>' + JSON.parse(category) + '</strong></p>');
+}
+
+function GetCatName() {
+    var category = sessionStorage.getItem("name").toString();
+    category = JSON.parse(category);
+    $('#categoryName').val(category);
 }
 
 function DisplayEditBooking(clicked_id, id) {
@@ -270,6 +281,8 @@ function DisplayEditBooking(clicked_id, id) {
 }
 
 function Payment() {
+
+    GetPrice();
     // Create a Stripe client.
     var stripe = Stripe('pk_test_6pRNASCoBOKtIshFeQd4XMUh');
 
@@ -328,3 +341,22 @@ function Payment() {
         });
     });
 }
+
+function GetPrice() {
+    var price = JSON.parse(sessionStorage.getItem("price"));
+
+    $('#price').val(price);
+}
+
+//function DoThis() {
+//    setTimeout(function () { window.location.reload(); }, 10);
+//}
+
+function SetVar() {
+
+    var stylist = $('input[name=stylist]:checked').val();
+
+    sessionStorage.setItem('stylist', JSON.stringify(stylist));
+}
+
+// git push -u origin master
